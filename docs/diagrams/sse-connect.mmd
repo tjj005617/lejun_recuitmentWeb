@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant U as 用户
+    participant FE as 前端 AppShell
+    participant API as SseController
+    participant MGR as SseEmitterManager
+    participant Redis as Redis
+
+    U->>FE: 登录成功
+    FE->>FE: stores/message.connectSSE()
+    FE->>API: GET /api/message/subscribe?token=xxx
+    API->>API: jwtUtil.getUserId(token)
+    API->>MGR: addEmitter(userId, emitter)
+    MGR->>MGR: emitters.put(userId, emitter)
+    API-->>FE: SSE 长连接建立
+    FE->>API: GET /api/message/unread-count
+    API->>Redis: getUnreadCount(userId)
+    Redis-->>FE: 未读数 = 3
+    FE->>FE: 导航栏显示红点(3)

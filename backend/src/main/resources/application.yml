@@ -1,0 +1,98 @@
+server:
+  port: 8080
+
+spring:
+  # Jackson 全局配置
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+
+  # MySQL 配置
+  datasource:
+    url: jdbc:mysql://192.168.150.105:3306/ai_interview?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8
+    username: root
+    password: root123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # Redis + MongoDB 配置
+  data:
+    redis:
+      host: 192.168.150.105
+      port: 6379
+      password: redis123
+      database: 0
+    mongodb:
+      uri: mongodb://admin:admin123@192.168.150.105:27017/junle_chat?authSource=admin
+
+  # RabbitMQ 配置
+  rabbitmq:
+    host: 192.168.150.105
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        acknowledge-mode: auto
+        prefetch: 10
+        concurrency: 2
+        max-concurrency: 5
+
+  # ElasticSearch 配置
+  elasticsearch:
+    uris: http://192.168.150.105:9200
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# Redisson 配置
+redisson:
+  single-server-config:
+    address: redis://192.168.150.105:6379
+    password: redis123
+    database: 0
+
+# AI配置 (Spring AI OpenAI SDK 默认拼接 /v1/chat/completions，baseUrl 不要带 /v1)
+ai:
+  api-key: sk-c5adv57e3za0pjemrmmp1cjlgfuheuk9poh6fuol97488zax
+  api-url: https://api.xiaomimimo.com
+  model: mimo-v2.5-pro
+  timeout: 120
+
+# DeepSeek 配置 (Spring AI OpenAI SDK 自动拼接 /v1/chat/completions，baseUrl 不要带 /v1)
+deepseek:
+  api-key: sk-d6682169b2c744a99ee9af29f376a623
+  api-url: https://api.deepseek.com
+  model: deepseek-v4-flash
+  timeout: 120
+
+# JWT 配置
+jwt:
+  secret: ai-interview-jwt-secret-key-must-be-at-least-256-bits-long-2026
+  expiration: 604800000  # 7天（毫秒）
+
+# MinIO 配置
+minio:
+  endpoint: http://192.168.150.105:9000
+  access-key: minioadmin
+  secret-key: minioadmin123
+  bucket: resumes
+

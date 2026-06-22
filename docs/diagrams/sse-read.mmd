@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant U as 用户
+    participant FE as 前端 MessageCenter
+    participant API as HTTP /api/message/read
+    participant MySQL as MySQL
+    participant Redis as Redis
+
+    U->>FE: 点击进入消息中心
+    FE->>API: markAsRead(senderId)
+    API->>MySQL: SELECT COUNT(*) WHERE receiverId=? AND senderId=? AND isRead=0
+    MySQL-->>API: unreadCount = 5
+    API->>MySQL: UPDATE SET isRead=1 WHERE receiverId=? AND senderId=? AND isRead=0
+    API->>Redis: DECR message:unread:{userId} BY 5
+    Redis-->>API: remaining = 0
+    API-->>FE: 标记成功
+    FE->>FE: fetchUnreadCount() → 红点消失

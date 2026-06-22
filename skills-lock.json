@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "uiux-excellence-guide": {
+      "source": "modelscope.cn",
+      "sourceType": "well-known",
+      "computedHash": "8a5fea21ce1e11443a5f0dac153178f931760c8babf036c1a481671014f73e8e"
+    }
+  }
+}

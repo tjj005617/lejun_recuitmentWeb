@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant U as 用户
+    participant FE as 前端 MessageCenter
+    participant WS as ChatWebSocket
+    participant MG as MongoDB
+    participant API as HTTP /api/message/read
+    participant MySQL as MySQL
+    participant Redis as Redis
+
+    U->>FE: 点击会话
+    FE->>WS: connectWebSocket(conversationId)
+    WS->>MG: getHistory(conversationId)
+    WS-->>FE: {type:"history", messages:[...]}
+    FE->>API: markAsRead(senderId)
+    API->>MySQL: 批量更新 isRead=1
+    API->>Redis: 未读数 -N
+    FE->>FE: fetchUnreadCount() 刷新红点

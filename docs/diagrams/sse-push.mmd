@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant Sender as 发送者
+    participant Consumer as ChatMessageConsumer
+    participant MySQL as MySQL message表
+    participant Redis as Redis
+    participant SSE as SseEmitterManager
+    participant FE as 接收者前端(AppShell)
+
+    Sender->>Consumer: 聊天消息消费
+    Consumer->>MySQL: INSERT message(type=chat)
+    Consumer->>Redis: INCR message:unread:{receiverId}
+    Consumer->>SSE: sendToUser(receiverId, "message", data)
+    SSE->>FE: SSE 事件推送
+    FE->>FE: unreadCount++ (红点+1)
+    FE->>FE: ElNotification 弹窗("新消息: 你好")

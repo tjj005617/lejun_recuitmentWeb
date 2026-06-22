@@ -1,0 +1,1 @@
+import{t as e}from"./request-ssHbiI1N.js";var t=t=>e.get(`/search/jobs`,{params:t}),n=t=>e.get(`/search/companies`,{params:t});export{t as n,n as t};

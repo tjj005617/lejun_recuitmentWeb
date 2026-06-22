@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!-- 日志存放路径 -->
+    <property name="log.path" value="logs/ai-interview"/>
+    <!-- 日志输出格式 -->
+    <property name="log.pattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n"/>
+
+    <!-- ==================== 控制台输出 ==================== -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ==================== 业务日志：INFO ==================== -->
+    <appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/info.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- ==================== 业务日志：ERROR ==================== -->
+    <appender name="file_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- ==================== AI 调用专用日志 ==================== -->
+    <appender name="file_ai" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/ai-call.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/ai-call.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ==================== 模块日志级别控制 ==================== -->
+
+    <!-- 业务模块：com.interview 下所有包 -->
+    <logger name="com.interview" level="info"/>
+
+    <!-- AI 调用模块：单独输出到 ai-call.log -->
+    <logger name="com.interview.service.ai" level="debug" additivity="false">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file_ai"/>
+    </logger>
+
+    <!-- Spring AI 框架日志：记录 HTTP 请求/响应 -->
+    <logger name="org.springframework.ai" level="debug" additivity="false">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file_ai"/>
+    </logger>
+
+    <!-- HTTP 客户端日志：记录实际网络请求 -->
+    <logger name="org.springframework.web.client" level="debug" additivity="false">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file_ai"/>
+    </logger>
+
+    <!-- Spring 框架：只记录 WARN 以上 -->
+    <logger name="org.springframework" level="warn"/>
+
+    <!-- MyBatis SQL 日志 -->
+    <logger name="com.interview.mapper" level="debug"/>
+
+    <!-- ==================== 根日志：控制台 + info + error ==================== -->
+    <root level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file_info"/>
+        <appender-ref ref="file_error"/>
+    </root>
+</configuration>

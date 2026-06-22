@@ -1,0 +1,22 @@
+sequenceDiagram
+    participant A as 发送者前端
+    participant WS as ChatWebSocket
+    participant MQ as RabbitMQ
+    participant C as ChatMessageConsumer
+    participant MG as MongoDB
+    participant B as 接收者前端
+
+    A->>A: 乐观更新：本地显示消息(status=sending)
+    A->>WS: wsSend({type:"text", content})
+    WS->>MQ: chatMessageProducer.sendChatMessage()
+    MQ->>C: 消费消息
+    C->>C: 检查接收者在线 → true
+    C->>MG: 保存消息(status=sending)
+    C->>MQ: 发送延迟ACK超时消息(30s)
+    C->>WS: broadcastToConversation()
+    WS->>A: {type:"message", data} (替换临时消息)
+    WS->>B: {type:"message", data}
+    B->>WS: wsSend({type:"ack", messageId})
+    WS->>MG: updateMessageStatus("sent")
+    WS->>A: {type:"ack", messageId}
+    A->>A: status = "sent"，转圈消失

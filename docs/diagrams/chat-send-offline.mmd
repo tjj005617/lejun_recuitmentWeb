@@ -1,0 +1,22 @@
+sequenceDiagram
+    participant A as 发送者前端
+    participant WS as ChatWebSocket
+    participant MQ as RabbitMQ
+    participant C as ChatMessageConsumer
+    participant MG as MongoDB
+    participant MySQL as MySQL message表
+    participant Redis as Redis
+    participant SSE as SseEmitterManager
+
+    A->>A: 乐观更新：本地显示消息(status=sending)
+    A->>WS: wsSend({type:"text", content})
+    WS->>MQ: chatMessageProducer.sendChatMessage()
+    MQ->>C: 消费消息
+    C->>C: 检查接收者在线 → false
+    C->>MG: 保存消息(status=sent，直接标记送达)
+    C->>WS: broadcastToConversation()
+    WS->>A: {type:"message", data} (status=sent，不转圈)
+    C->>MySQL: 写通知消息(type=chat)
+    C->>Redis: 未读数+1
+    C->>SSE: sendToUser(receiverId, "message", notification)
+    Note over SSE: 接收者离线，推送静默丢弃

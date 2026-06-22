@@ -1,0 +1,1 @@
+import{t as e}from"./request-ssHbiI1N.js";function t(t){let n=new FormData;return n.append(`file`,t,`recording.wav`),e.post(`/stt`,n,{headers:{"Content-Type":`multipart/form-data`}})}export{t};

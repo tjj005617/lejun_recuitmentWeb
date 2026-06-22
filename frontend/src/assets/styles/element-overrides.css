@@ -1,0 +1,73 @@
+/* ============================================
+   Element Plus Theme Overrides
+   ============================================ */
+
+:root {
+  /* Primary color mapping */
+  --el-color-primary: var(--color-primary);
+  --el-color-primary-light-3: var(--color-primary-light);
+  --el-color-primary-light-5: #6ee7b7;
+  --el-color-primary-light-7: #a7f3d0;
+  --el-color-primary-light-9: var(--color-primary-surface);
+  --el-color-primary-dark-2: var(--color-primary-dark);
+
+  /* Typography */
+  --el-font-family: var(--font-family-base);
+  --el-font-size-base: var(--text-base);
+  --el-font-size-small: var(--text-sm);
+  --el-font-size-extra-small: var(--text-xs);
+  --el-font-size-medium: var(--text-base);
+  --el-font-size-large: var(--text-lg);
+
+  /* Border radius */
+  --el-border-radius-base: var(--radius-md);
+  --el-border-radius-small: var(--radius-sm);
+  --el-border-radius-round: var(--radius-full);
+  --el-border-radius-circle: 100%;
+
+  /* Border color */
+  --el-border-color: var(--color-border);
+  --el-border-color-light: var(--color-border);
+  --el-border-color-lighter: var(--color-border);
+  --el-border-color-extra-light: var(--color-surface-muted);
+  --el-border-color-dark: var(--color-border-strong);
+
+  /* Text color */
+  --el-text-color-primary: var(--color-text-primary);
+  --el-text-color-regular: var(--color-text-secondary);
+  --el-text-color-secondary: var(--color-text-tertiary);
+  --el-text-color-placeholder: var(--color-text-tertiary);
+
+  /* Background */
+  --el-bg-color: var(--color-surface);
+  --el-bg-color-page: var(--color-surface-muted);
+  --el-bg-color-overlay: var(--color-surface);
+  --el-fill-color-blank: var(--color-surface);
+  --el-fill-color-light: var(--color-surface-muted);
+  --el-fill-color-lighter: var(--color-surface-raised);
+  --el-fill-color-extra-light: var(--color-surface-raised);
+
+  /* Component size — touch target ≥ 44px */
+  --el-component-size: 44px;
+  --el-component-size-large: 48px;
+  --el-component-size-small: 36px;
+
+  /* Button */
+  --el-button-size: 44px;
+
+  /* Card */
+  --el-card-border-radius: var(--radius-lg);
+  --el-card-border-color: var(--color-border);
+  --el-card-bg-color: var(--color-surface);
+  --el-card-padding: var(--space-6);
+
+  /* Tag */
+  --el-tag-border-radius: var(--radius-sm);
+
+  /* Input */
+  --el-input-border-radius: var(--radius-md);
+
+  /* Progress */
+  --el-progress-bar-radius: var(--radius-full);
+  --el-progress-radius: var(--radius-full);
+}
