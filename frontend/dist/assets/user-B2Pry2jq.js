@@ -1,0 +1,1 @@
+import{t as e}from"./request-BWXPi1x5.js";var t=t=>e.post(`/user/login`,t),n=t=>e.get(`/user/${t}`),r=t=>e.get(`/user/${t}/resumes`),i=t=>e.get(`/user-profile/${t}`),a=(t,n)=>e.put(`/user-profile/${t}`,n);export{a,t as i,i as n,r,n as t};

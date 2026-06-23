@@ -397,3 +397,130 @@ CREATE TABLE IF NOT EXISTS job_audit_log (
     INDEX idx_action (action),
     INDEX idx_created_at (created_at)
 ) COMMENT '职位审核日志表';
+
+-- ============================================================
+-- 知识图谱八股面试题库
+-- ============================================================
+
+-- 知识图谱大类（每个大类对应一个 MinIO 桶）
+CREATE TABLE IF NOT EXISTS kg_category (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL COMMENT '分类名称',
+    bucket VARCHAR(100) NOT NULL COMMENT 'MinIO bucket名称',
+    icon VARCHAR(500) COMMENT '图标URL或emoji',
+    sort_order INTEGER DEFAULT 0 COMMENT '排序权重',
+    status VARCHAR(20) DEFAULT 'active' COMMENT 'active-启用 disabled-禁用',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INTEGER,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by INTEGER,
+    deleted INTEGER DEFAULT 0,
+    UNIQUE INDEX uk_name (name),
+    UNIQUE INDEX uk_bucket (bucket)
+) COMMENT '知识图谱大类';
+
+-- 初始化知识图谱大类
+INSERT INTO kg_category (name, bucket, sort_order) VALUES
+('Java', 'kg-java', 1),
+('Python', 'kg-python', 2),
+('前端', 'kg-frontend', 3),
+('数据库', 'kg-database', 4),
+('操作系统', 'kg-os', 5),
+('计算机网络', 'kg-network', 6),
+('算法与数据结构', 'kg-algorithm', 7),
+('系统设计', 'kg-system-design', 8)
+ON DUPLICATE KEY UPDATE bucket=VALUES(bucket);
+
+-- 知识图谱文档（上传的 MD 文件）
+CREATE TABLE IF NOT EXISTS kg_document (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    uuid VARCHAR(36) NOT NULL COMMENT 'UUID',
+    title VARCHAR(200) NOT NULL COMMENT '文档标题',
+    file_name VARCHAR(255) NOT NULL COMMENT '原始文件名',
+    object_name VARCHAR(255) COMMENT 'MinIO object名称',
+    category_id INTEGER COMMENT '所属大类ID（可为空，AI自动分类）',
+    raw_content MEDIUMTEXT COMMENT 'MD原文内容',
+    parse_status VARCHAR(20) DEFAULT 'pending' COMMENT 'pending/processing/completed/failed',
+    vertex_count INTEGER DEFAULT 0 COMMENT '提取的知识点数量',
+    edge_count INTEGER DEFAULT 0 COMMENT '生成的关系数量',
+    error_message TEXT COMMENT '处理失败原因',
+    current_step VARCHAR(50) COMMENT '当前处理步骤：parse/classify/extract/analyze/adjacency',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INTEGER,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by INTEGER,
+    deleted INTEGER DEFAULT 0,
+    INDEX idx_category_id (category_id),
+    INDEX idx_parse_status (parse_status)
+) COMMENT '知识图谱文档';
+
+-- 知识图谱顶点（提取的知识点）
+CREATE TABLE IF NOT EXISTS kg_vertex (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    uuid VARCHAR(36) NOT NULL COMMENT 'UUID',
+    document_id INTEGER NOT NULL COMMENT '来源文档ID',
+    category_id INTEGER NOT NULL COMMENT '所属大类ID',
+    name VARCHAR(200) NOT NULL COMMENT '知识点名称',
+    vertex_type VARCHAR(50) NOT NULL COMMENT 'concept/technology/api/theory/example/keyword',
+    sub_type VARCHAR(100) COMMENT '子类型（AI动态分类）',
+    description TEXT COMMENT '简要描述',
+    properties JSON COMMENT '扩展属性JSON',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INTEGER,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by INTEGER,
+    deleted INTEGER DEFAULT 0,
+    INDEX idx_document_id (document_id),
+    INDEX idx_category_id (category_id),
+    INDEX idx_name (name),
+    UNIQUE INDEX uk_uuid (uuid)
+) COMMENT '知识图谱顶点';
+
+-- 知识图谱边（知识点间的关系）
+CREATE TABLE IF NOT EXISTS kg_edge (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    uuid VARCHAR(36) NOT NULL COMMENT 'UUID',
+    from_id INTEGER NOT NULL COMMENT '起始顶点ID',
+    to_id INTEGER NOT NULL COMMENT '目标顶点ID',
+    edge_label VARCHAR(50) NOT NULL COMMENT 'prerequisite/related/extends/uses/contains/conflicts',
+    weight DECIMAL(3,2) DEFAULT 0.50 COMMENT '权重 0.00-1.00',
+    description VARCHAR(500) COMMENT '关系描述',
+    properties JSON COMMENT '扩展属性JSON',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INTEGER,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by INTEGER,
+    deleted INTEGER DEFAULT 0,
+    UNIQUE INDEX uk_edge (from_id, to_id, edge_label),
+    INDEX idx_from_id (from_id),
+    INDEX idx_to_id (to_id)
+) COMMENT '知识图谱边';
+
+-- 邻接缓存表（一跳邻居快速查询）
+CREATE TABLE IF NOT EXISTS kg_adjacency (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    vertex_id INTEGER NOT NULL COMMENT '顶点ID',
+    neighbor_id INTEGER NOT NULL COMMENT '邻居顶点ID',
+    direct_label VARCHAR(50) NOT NULL COMMENT '直接关系标签',
+    direction VARCHAR(10) NOT NULL COMMENT 'incoming/outgoing',
+    weight DECIMAL(3,2) DEFAULT 0.50 COMMENT '权重',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE INDEX uk_vertex_neighbor (vertex_id, neighbor_id, direct_label),
+    INDEX idx_vertex_id (vertex_id),
+    INDEX idx_neighbor_id (neighbor_id)
+) COMMENT '邻接缓存表';
+
+-- 知识图谱处理任务（异步流水线追踪）
+CREATE TABLE IF NOT EXISTS kg_processing_task (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    document_id INTEGER NOT NULL COMMENT '文档ID',
+    step VARCHAR(50) NOT NULL COMMENT 'parse/extract_vertices/analyze_edges/build_adjacency',
+    status VARCHAR(20) DEFAULT 'running' COMMENT 'running/completed/failed',
+    progress INTEGER DEFAULT 0 COMMENT '进度百分比 0-100',
+    result_summary TEXT COMMENT '处理结果摘要',
+    error_message TEXT COMMENT '失败原因',
+    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP NULL,
+    INDEX idx_document_id (document_id),
+    INDEX idx_status (status)
+) COMMENT '知识图谱处理任务';

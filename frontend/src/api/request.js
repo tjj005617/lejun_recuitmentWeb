@@ -10,7 +10,8 @@ const request = axios.create({
 request.interceptors.request.use(
   config => {
     // 管理后台接口使用 admin_token，其他接口使用 token
-    const isAdminApi = config.url && config.url.startsWith('/api/admin')
+    // config.url 可能带 /api 前缀（baseURL 拼接前）也可能不带，两种都检测
+    const isAdminApi = config.url && (config.url.startsWith('/api/admin') || config.url.startsWith('/admin'))
     const token = isAdminApi
       ? localStorage.getItem('admin_token')
       : localStorage.getItem('token')
@@ -39,7 +40,8 @@ request.interceptors.response.use(
     // 401 未授权（退出登录后 token 失效），静默处理，不弹错误框
     if (status === 401) {
       // 管理后台 token 失效，清除并跳转登录页
-      if (error.config?.url?.startsWith('/api/admin')) {
+      const url = error.config?.url || ''
+      if (url.startsWith('/api/admin') || url.startsWith('/admin')) {
         localStorage.removeItem('admin_token')
         window.location.href = '/admin/login'
       }

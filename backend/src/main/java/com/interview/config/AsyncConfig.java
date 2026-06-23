@@ -17,4 +17,13 @@ public class AsyncConfig {
     public ExecutorService aiExecutor() {
         return Executors.newFixedThreadPool(10);
     }
+
+    /**
+     * 知识图谱处理线程池
+     * 3个线程用于文档解析、知识点提取、关系分析
+     */
+    @Bean("kgExecutor")
+    public ExecutorService kgExecutor() {
+        return Executors.newFixedThreadPool(3);
+    }
 }

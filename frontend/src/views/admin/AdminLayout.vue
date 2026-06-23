@@ -97,6 +97,17 @@
             </el-tooltip>
           </div>
 
+          <!-- 八股面试 -->
+          <div class="menu-group">
+            <div v-show="!sidebarCollapsed" class="group-label">八股面试</div>
+            <el-tooltip content="八股面试" placement="right" :disabled="!sidebarCollapsed" :show-after="300">
+              <el-menu-item index="/admin/knowledge" @click="go('/admin/knowledge')">
+                <el-icon><Collection /></el-icon>
+                <template #title>八股文档管理</template>
+              </el-menu-item>
+            </el-tooltip>
+          </div>
+
           <!-- 系统配置 -->
           <div class="menu-group">
             <div v-show="!sidebarCollapsed" class="group-label">系统配置</div>
@@ -204,7 +215,7 @@ import { ElMessage } from 'element-plus'
 import {
   DataBoard, User, OfficeBuilding, Suitcase, Document,
   VideoCamera, PriceTag, Fold, Expand, ArrowDown,
-  Bell, FullScreen, Setting, Monitor, SwitchButton
+  Bell, FullScreen, Setting, Monitor, SwitchButton, Collection
 } from '@element-plus/icons-vue'
 
 const route = useRoute()

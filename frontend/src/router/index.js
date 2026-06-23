@@ -18,6 +18,7 @@ const routes = [
       { path: 'benefit-tags', name: 'AdminBenefitTags', component: () => import('../views/admin/AdminBenefitTags.vue'), meta: { title: '福利标签' } },
       { path: 'job-categories', name: 'AdminJobCategories', component: () => import('../views/admin/AdminJobCategories.vue'), meta: { title: '职位分类' } },
       { path: 'regions', name: 'AdminRegions', component: () => import('../views/admin/AdminRegions.vue'), meta: { title: '地区管理' } },
+      { path: 'knowledge', name: 'AdminKnowledge', component: () => import('../views/admin/AdminKnowledge.vue'), meta: { title: '八股面试' } },
     ]
   },
 
@@ -34,6 +35,8 @@ const routes = [
   { path: '/interview/:id', name: 'InterviewRoom', component: () => import('../views/InterviewRoom.vue'), meta: { requiresAuth: true } },
   { path: '/report/:id', name: 'ReportDetail', component: () => import('../views/ReportDetail.vue'), meta: { requiresAuth: true } },
   { path: '/messages', name: 'MessageCenter', component: () => import('../views/MessageCenter.vue'), meta: { requiresAuth: true } },
+  { path: '/knowledge', name: 'KnowledgeGraph', component: () => import('../views/KnowledgeGraph.vue') },
+  { path: '/knowledge/:categoryId', name: 'KnowledgeGraphCategory', component: () => import('../views/KnowledgeGraph.vue') },
   { path: '/hr', name: 'HRDashboard', component: () => import('../views/HRDashboard.vue'), meta: { requiresAuth: true, requiresHR: true } },
   { path: '/hr/company', name: 'HRCompanyEdit', component: () => import('../views/hr/HRCompanyEdit.vue'), meta: { requiresAuth: true, requiresHR: true } },
   { path: '/hr/jobs', name: 'HRJobList', component: () => import('../views/hr/HRJobList.vue'), meta: { requiresAuth: true, requiresHR: true } },

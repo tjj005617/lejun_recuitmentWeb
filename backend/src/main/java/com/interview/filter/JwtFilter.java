@@ -44,6 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/region/path/*",
             "/api/benefit-tag/list",
             "/api/search/**",
+            "/api/kg/**",
             "/api/interview/tts",
             "/api/interview/check-complete",
             "/api/stt",
