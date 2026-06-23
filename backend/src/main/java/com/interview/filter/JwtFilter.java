@@ -99,6 +99,14 @@ public class JwtFilter extends OncePerRequestFilter {
             UserContext.setUsername(username);
             UserContext.setRoleType(roleType);
 
+            // 管理后台接口校验管理员角色（roleType=3）
+            if (path.startsWith("/api/admin/") && !path.equals("/api/admin/login")) {
+                if (roleType == null || roleType != 3) {
+                    sendError(response, 403, "无权限访问，仅管理员可用");
+                    return;
+                }
+            }
+
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             log.error("Token解析失败", e);

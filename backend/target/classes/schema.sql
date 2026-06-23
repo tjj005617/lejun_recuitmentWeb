@@ -132,6 +132,7 @@ CREATE TABLE IF NOT EXISTS company (
     address VARCHAR(200) COMMENT '详细地址（街道门牌号）',
     website VARCHAR(200) COMMENT '公司官网',
     description TEXT COMMENT '公司介绍',
+    status VARCHAR(20) DEFAULT 'active' COMMENT '状态：active-正常 disabled-禁用',
     view_count INTEGER DEFAULT 0 COMMENT '浏览量',
     follow_count INTEGER DEFAULT 0 COMMENT '关注数',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -141,7 +142,8 @@ CREATE TABLE IF NOT EXISTS company (
     deleted INTEGER DEFAULT 0,
     INDEX idx_user_id (user_id),
     INDEX idx_city (city),
-    INDEX idx_region_id (region_id)
+    INDEX idx_region_id (region_id),
+    INDEX idx_status (status)
 );
 
 -- 用户-公司关注关系表
@@ -161,12 +163,15 @@ CREATE TABLE IF NOT EXISTS job_category (
     name VARCHAR(50) NOT NULL COMMENT '分类名称',
     parent_id INTEGER DEFAULT 0 COMMENT '父分类ID',
     sort_order INTEGER DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'active' COMMENT '状态：active-启用 disabled-禁用',
+    description VARCHAR(200) COMMENT '分类描述',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by INTEGER COMMENT '创建人ID',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by INTEGER COMMENT '修改人ID',
     deleted INTEGER DEFAULT 0,
-    UNIQUE INDEX uk_name_parent (name, parent_id)
+    UNIQUE INDEX uk_name_parent (name, parent_id),
+    INDEX idx_status (status)
 );
 
 -- 初始化职位分类
@@ -199,7 +204,7 @@ CREATE TABLE IF NOT EXISTS job (
     education VARCHAR(50) COMMENT '学历要求',
     description TEXT NOT NULL COMMENT '职位描述',
     requirements TEXT COMMENT '任职要求',
-    status VARCHAR(20) DEFAULT 'active' COMMENT '状态：active/paused/closed',
+    status VARCHAR(20) DEFAULT 'active' COMMENT '状态：pending-待审核 active-招聘中 paused-暂停 closed-已关闭 rejected-已拒绝',
     view_count INTEGER DEFAULT 0 COMMENT '浏览次数',
     apply_count INTEGER DEFAULT 0 COMMENT '申请次数',
     published_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -273,9 +278,12 @@ CREATE TABLE IF NOT EXISTS region (
     name VARCHAR(50) NOT NULL COMMENT '名称',
     parent_id INTEGER DEFAULT 0 COMMENT '父级ID（0=省级）',
     level TINYINT NOT NULL COMMENT '层级：1=省 2=市 3=区',
+    status VARCHAR(20) DEFAULT 'active' COMMENT '状态：active-启用 disabled-禁用',
+    sort_order INTEGER DEFAULT 0 COMMENT '排序权重',
     area_code VARCHAR(20) COMMENT '行政区划代码',
     INDEX idx_parent_id (parent_id),
-    INDEX idx_level (level)
+    INDEX idx_level (level),
+    INDEX idx_status (status)
 );
 
 -- 福利标签表
@@ -330,3 +338,62 @@ CREATE TABLE IF NOT EXISTS user_profile (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     INDEX idx_user_id (user_id)
 );
+
+-- ============================================
+-- 管理后台新增表
+-- ============================================
+
+-- 管理员操作日志表
+CREATE TABLE IF NOT EXISTS admin_operation_log (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    admin_id INTEGER NOT NULL COMMENT '操作管理员ID',
+    module VARCHAR(50) NOT NULL COMMENT '操作模块：user/company/job/application/interview/benefit_tag/job_category/region',
+    action VARCHAR(50) NOT NULL COMMENT '操作类型：create/update/delete/status_change/role_change/import/export',
+    target_id INTEGER COMMENT '操作对象ID',
+    target_name VARCHAR(200) COMMENT '操作对象名称（冗余，方便查询）',
+    detail TEXT COMMENT '操作详情JSON：{before: ..., after: ...}',
+    ip VARCHAR(50) COMMENT '操作IP地址',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+    INDEX idx_admin_id (admin_id),
+    INDEX idx_module (module),
+    INDEX idx_action (action),
+    INDEX idx_target (module, target_id),
+    INDEX idx_created_at (created_at)
+) COMMENT '管理员操作日志表';
+
+-- 系统配置表
+CREATE TABLE IF NOT EXISTS system_config (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    config_key VARCHAR(100) UNIQUE NOT NULL COMMENT '配置键',
+    config_value TEXT COMMENT '配置值',
+    config_type VARCHAR(20) DEFAULT 'string' COMMENT '值类型：string/number/boolean/json',
+    description VARCHAR(200) COMMENT '配置说明',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by INTEGER COMMENT '修改人ID'
+) COMMENT '系统配置表';
+
+-- 初始化系统配置
+INSERT INTO system_config (config_key, config_value, config_type, description) VALUES
+('site_name', 'AI面试官', 'string', '站点名称'),
+('site_logo', '/logo.png', 'string', '站点Logo'),
+('maintenance_mode', 'false', 'boolean', '是否维护模式'),
+('registration_enabled', 'true', 'boolean', '是否开放注册'),
+('max_resume_count', '3', 'number', '每用户最大简历数'),
+('max_import_rows', '500', 'number', '单次导入最大行数'),
+('admin_email', 'admin@ai-interview.com', 'string', '管理员邮箱')
+ON DUPLICATE KEY UPDATE config_value=VALUES(config_value);
+
+-- 职位审核日志表
+CREATE TABLE IF NOT EXISTS job_audit_log (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    job_id INTEGER NOT NULL COMMENT '职位ID',
+    admin_id INTEGER NOT NULL COMMENT '审核管理员ID',
+    action VARCHAR(20) NOT NULL COMMENT '操作：approve/reject',
+    reason TEXT COMMENT '审核原因（拒绝时必填）',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '审核时间',
+    INDEX idx_job_id (job_id),
+    INDEX idx_admin_id (admin_id),
+    INDEX idx_action (action),
+    INDEX idx_created_at (created_at)
+) COMMENT '职位审核日志表';

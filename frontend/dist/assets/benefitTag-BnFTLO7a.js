@@ -1,1 +1,0 @@
-import{t as e}from"./request-ssHbiI1N.js";var t=t=>e.get(`/benefit-tag/list`,{params:{type:t}});export{t};

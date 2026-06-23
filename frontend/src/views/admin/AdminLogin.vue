@@ -27,6 +27,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { login } from '@/api/user'
 
 const router = useRouter()
 const formRef = ref()
@@ -47,16 +48,23 @@ const handleLogin = async () => {
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
   loading.value = true
-  setTimeout(() => {
-    if (form.username === 'admin' && form.password === 'admin123') {
-      localStorage.setItem('admin_token', 'mock_admin_token')
+  try {
+    const res = await login({
+      username: form.username,
+      password: form.password
+    })
+    if (res.data.roleType === 3) {
+      localStorage.setItem('admin_token', res.data.token)
       ElMessage.success('登录成功')
       router.push('/admin/dashboard')
     } else {
-      ElMessage.error('账号或密码错误')
+      ElMessage.error('该账号非管理员，无权登录后台')
     }
+  } catch (e) {
+    // request.js 已处理错误提示
+  } finally {
     loading.value = false
-  }, 800)
+  }
 }
 </script>
 

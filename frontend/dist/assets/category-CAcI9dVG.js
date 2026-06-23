@@ -1,0 +1,1 @@
+import{t as e}from"./request-DZt9BxNI.js";var t=()=>e.get(`/category/tree`);export{t};

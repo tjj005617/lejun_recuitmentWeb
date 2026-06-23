@@ -1630,3 +1630,259 @@
 20:32:02.436 [http-nio-8080-exec-9] INFO  c.i.s.SseEmitterManager - [removeEmitterIfCurrent,50] - SSE连接移除(条件匹配): userId=3, 当前在线数=0
 20:32:02.516 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,350] - HikariPool-1 - Shutdown initiated...
 20:32:02.523 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,352] - HikariPool-1 - Shutdown completed.
+01:20:47.530 [main] INFO  c.i.InterviewApplication - [logStarting,50] - Starting InterviewApplication using Java 19.0.2 with PID 131856 (E:\java\ai-interview\backend\target\classes started by TJJ in E:\java\ai-interview)
+01:20:47.533 [main] INFO  c.i.InterviewApplication - [logStartupProfileInfo,654] - No active profile set, falling back to 1 default profile: "default"
+01:20:50.419 [main] INFO  o.a.c.c.AprLifecycleListener - [log,173] - Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+01:20:50.424 [main] INFO  o.a.c.c.AprLifecycleListener - [log,173] - OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+01:20:50.435 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Initializing ProtocolHandler ["http-nio-8080"]
+01:20:50.436 [main] INFO  o.a.c.c.StandardService - [log,173] - Starting service [Tomcat]
+01:20:50.436 [main] INFO  o.a.c.c.StandardEngine - [log,173] - Starting Servlet engine: [Apache Tomcat/10.1.20]
+01:20:50.567 [main] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring embedded WebApplicationContext
+01:20:50.996 [main] INFO  c.z.h.HikariDataSource - [getConnection,110] - HikariPool-1 - Starting...
+01:20:51.174 [main] INFO  c.z.h.p.HikariPool - [checkFailFast,565] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@516037be
+01:20:51.177 [main] INFO  c.z.h.HikariDataSource - [getConnection,123] - HikariPool-1 - Start completed.
+01:20:51.817 [main] INFO  o.redisson.Version - [logVersion,43] - Redisson 3.27.0
+01:20:52.256 [redisson-netty-1-5] INFO  o.r.c.ConnectionsHolder - [lambda$createConnection$1,191] - 1 connections initialized for 192.168.150.105/192.168.150.105:6379
+01:20:52.489 [redisson-netty-1-19] INFO  o.r.c.ConnectionsHolder - [lambda$createConnection$1,191] - 24 connections initialized for 192.168.150.105/192.168.150.105:6379
+01:20:53.925 [main] INFO  o.m.driver.client - [info,71] - MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync|spring-boot", "version": "4.11.2"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/19.0.2+7-44"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=MongoCredential{mechanism=null, userName='admin', source='admin', password=<hidden>, mechanismProperties=<hidden>}, transportSettings=null, streamFactoryFactory=null, commandListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener@63f08f9f], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@6e21b6f8, com.mongodb.Jep395RecordCodecProvider@69a14512, com.mongodb.KotlinCodecProvider@4bd7e0b6]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[192.168.150.105:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener@2cbc0224], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null}
+01:20:53.944 [cluster-ClusterId{value='6a396ef53da88904cdebcd1a', description='null'}-192.168.150.105:27017] INFO  o.m.driver.cluster - [info,71] - Monitor thread successfully connected to server with description ServerDescription{address=192.168.150.105:27017, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=23877500}
+01:20:56.234 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Starting ProtocolHandler ["http-nio-8080"]
+01:20:56.424 [main] INFO  c.i.InterviewApplication - [logStarted,56] - Started InterviewApplication in 9.561 seconds (process running for 10.676)
+01:20:57.074 [RMI TCP Connection(4)-10.117.190.4] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+01:21:15.332 [http-nio-8080-exec-1] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2
+01:34:17.773 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,350] - HikariPool-1 - Shutdown initiated...
+01:34:17.783 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,352] - HikariPool-1 - Shutdown completed.
+01:34:23.036 [main] INFO  c.i.InterviewApplication - [logStarting,50] - Starting InterviewApplication using Java 19.0.2 with PID 105684 (E:\java\ai-interview\backend\target\classes started by TJJ in E:\java\ai-interview)
+01:34:23.038 [main] INFO  c.i.InterviewApplication - [logStartupProfileInfo,654] - No active profile set, falling back to 1 default profile: "default"
+01:34:26.261 [main] INFO  o.a.c.c.AprLifecycleListener - [log,173] - Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+01:34:26.301 [main] INFO  o.a.c.c.AprLifecycleListener - [log,173] - OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+01:34:26.321 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Initializing ProtocolHandler ["http-nio-8080"]
+01:34:26.324 [main] INFO  o.a.c.c.StandardService - [log,173] - Starting service [Tomcat]
+01:34:26.326 [main] INFO  o.a.c.c.StandardEngine - [log,173] - Starting Servlet engine: [Apache Tomcat/10.1.20]
+01:34:26.571 [main] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring embedded WebApplicationContext
+01:34:27.258 [main] INFO  c.z.h.HikariDataSource - [getConnection,110] - HikariPool-1 - Starting...
+01:34:27.521 [main] INFO  c.z.h.p.HikariPool - [checkFailFast,565] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@21688427
+01:34:27.524 [main] INFO  c.z.h.HikariDataSource - [getConnection,123] - HikariPool-1 - Start completed.
+01:34:28.201 [main] INFO  o.redisson.Version - [logVersion,43] - Redisson 3.27.0
+01:34:28.696 [redisson-netty-1-5] INFO  o.r.c.ConnectionsHolder - [lambda$createConnection$1,191] - 1 connections initialized for 192.168.150.105/192.168.150.105:6379
+01:34:28.838 [redisson-netty-1-19] INFO  o.r.c.ConnectionsHolder - [lambda$createConnection$1,191] - 24 connections initialized for 192.168.150.105/192.168.150.105:6379
+01:34:30.450 [main] INFO  o.m.driver.client - [info,71] - MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync|spring-boot", "version": "4.11.2"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/19.0.2+7-44"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=MongoCredential{mechanism=null, userName='admin', source='admin', password=<hidden>, mechanismProperties=<hidden>}, transportSettings=null, streamFactoryFactory=null, commandListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener@6179af64], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@193f5509, com.mongodb.Jep395RecordCodecProvider@475a8415, com.mongodb.KotlinCodecProvider@58c48a23]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[192.168.150.105:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener@74ea1cd0], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null}
+01:34:30.496 [cluster-ClusterId{value='6a397226b2c1407adc73485a', description='null'}-192.168.150.105:27017] INFO  o.m.driver.cluster - [info,71] - Monitor thread successfully connected to server with description ServerDescription{address=192.168.150.105:27017, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=52715700}
+01:34:32.815 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Starting ProtocolHandler ["http-nio-8080"]
+01:34:33.039 [main] INFO  c.i.InterviewApplication - [logStarted,56] - Started InterviewApplication in 10.812 seconds (process running for 12.091)
+01:34:33.586 [RMI TCP Connection(1)-10.117.190.4] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+01:34:49.525 [http-nio-8080-exec-1] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+01:34:49.525 [http-nio-8080-exec-5] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:36:18.250 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,350] - HikariPool-1 - Shutdown initiated...
+01:36:18.257 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,352] - HikariPool-1 - Shutdown completed.
+01:36:22.348 [main] INFO  c.i.InterviewApplication - [logStarting,50] - Starting InterviewApplication using Java 19.0.2 with PID 18028 (E:\java\ai-interview\backend\target\classes started by TJJ in E:\java\ai-interview)
+01:36:22.351 [main] INFO  c.i.InterviewApplication - [logStartupProfileInfo,654] - No active profile set, falling back to 1 default profile: "default"
+01:36:25.267 [main] INFO  o.a.c.c.AprLifecycleListener - [log,173] - Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+01:36:25.275 [main] INFO  o.a.c.c.AprLifecycleListener - [log,173] - OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+01:36:25.295 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Initializing ProtocolHandler ["http-nio-8080"]
+01:36:25.300 [main] INFO  o.a.c.c.StandardService - [log,173] - Starting service [Tomcat]
+01:36:25.301 [main] INFO  o.a.c.c.StandardEngine - [log,173] - Starting Servlet engine: [Apache Tomcat/10.1.20]
+01:36:25.533 [main] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring embedded WebApplicationContext
+01:36:26.210 [main] INFO  c.z.h.HikariDataSource - [getConnection,110] - HikariPool-1 - Starting...
+01:36:26.449 [main] INFO  c.z.h.p.HikariPool - [checkFailFast,565] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4caf875c
+01:36:26.452 [main] INFO  c.z.h.HikariDataSource - [getConnection,123] - HikariPool-1 - Start completed.
+01:36:27.080 [main] INFO  o.redisson.Version - [logVersion,43] - Redisson 3.27.0
+01:36:27.627 [redisson-netty-1-4] INFO  o.r.c.ConnectionsHolder - [lambda$createConnection$1,191] - 1 connections initialized for 192.168.150.105/192.168.150.105:6379
+01:36:27.781 [redisson-netty-1-19] INFO  o.r.c.ConnectionsHolder - [lambda$createConnection$1,191] - 24 connections initialized for 192.168.150.105/192.168.150.105:6379
+01:36:29.811 [main] INFO  o.m.driver.client - [info,71] - MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync|spring-boot", "version": "4.11.2"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/19.0.2+7-44"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=MongoCredential{mechanism=null, userName='admin', source='admin', password=<hidden>, mechanismProperties=<hidden>}, transportSettings=null, streamFactoryFactory=null, commandListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener@386ec37d], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@10007fdc, com.mongodb.Jep395RecordCodecProvider@7ca0aa55, com.mongodb.KotlinCodecProvider@51a8aed8]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[192.168.150.105:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener@1f13eabb], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null}
+01:36:29.837 [cluster-ClusterId{value='6a39729d7454a34a417d13d4', description='null'}-192.168.150.105:27017] INFO  o.m.driver.cluster - [info,71] - Monitor thread successfully connected to server with description ServerDescription{address=192.168.150.105:27017, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=35062100}
+01:36:33.459 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Starting ProtocolHandler ["http-nio-8080"]
+01:36:33.736 [main] INFO  c.i.InterviewApplication - [logStarted,56] - Started InterviewApplication in 12.053 seconds (process running for 13.162)
+01:36:34.140 [RMI TCP Connection(1)-10.117.190.4] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+01:37:04.454 [http-nio-8080-exec-1] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2
+01:37:05.917 [http-nio-8080-exec-2] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+01:37:06.084 [http-nio-8080-exec-3] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:37:06.172 [http-nio-8080-exec-5] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/hot
+01:37:06.388 [http-nio-8080-exec-7] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/subscribe
+01:37:06.408 [http-nio-8080-exec-7] INFO  c.i.s.SseEmitterManager - [addEmitter,31] - SSE连接注册: userId=2, 当前在线数=1
+01:37:06.411 [http-nio-8080-exec-7] INFO  c.i.c.SseController - [subscribe,68] - SSE订阅成功: userId=2
+01:37:06.438 [http-nio-8080-exec-8] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:37:06.527 [http-nio-8080-exec-10] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+01:37:06.608 [http-nio-8080-exec-1] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+01:37:08.726 [http-nio-8080-exec-5] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:37:08.906 [http-nio-8080-exec-3] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/job/8191/favorite
+01:37:08.915 [http-nio-8080-exec-3] INFO  c.i.s.i.JobServiceImpl - [isFavorited,520] - isFavorited check: userId=2, jobId=8191, found=false, deleted=null
+01:37:09.022 [http-nio-8080-exec-7] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/job/guess
+01:37:09.024 [http-nio-8080-exec-8] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/application/my
+01:37:16.493 [http-nio-8080-exec-10] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:37:16.943 [http-nio-8080-exec-5] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/15/view
+01:37:17.048 [http-nio-8080-exec-6] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/15/followed
+01:37:21.613 [http-nio-8080-exec-9] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:37:21.613 [http-nio-8080-exec-8] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/hot
+01:37:23.281 [http-nio-8080-exec-10] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:37:23.709 [http-nio-8080-exec-6] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/8/view
+01:37:23.810 [http-nio-8080-exec-3] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/8/followed
+01:37:26.673 [http-nio-8080-exec-7] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:37:26.674 [http-nio-8080-exec-8] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/hot
+01:37:29.419 [http-nio-8080-exec-10] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2/resumes
+01:37:29.422 [http-nio-8080-exec-5] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:37:29.524 [http-nio-8080-exec-6] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/resume/8
+01:37:29.525 [http-nio-8080-exec-3] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/resume/9
+01:37:30.617 [http-nio-8080-exec-9] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/read/5
+01:37:30.647 [http-nio-8080-exec-9] INFO  c.i.s.i.MessageServiceImpl - [markAsRead,203] - 消息标记已读: receiverId=2, senderId=5, count=0
+01:37:30.765 [http-nio-8080-exec-7] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+01:37:30.908 [http-nio-8080-exec-8] INFO  c.i.w.ChatWebSocket - [afterConnectionEstablished,109] - 聊天WebSocket连接: sessionId=d8663d5f-19a9-cada-e465-d8a6d66891dc, userId=2, conversationId=2_5
+01:37:34.616 [http-nio-8080-exec-2] INFO  c.i.w.ChatWebSocket - [handleTextMessage,126] - WS收到: type=text, userId=2, payload={"type":"text","content":"吱吱吱吱吱吱吱吱","tempId":"temp_1782149854574"}
+01:37:34.682 [http-nio-8080-exec-2] INFO  c.i.s.i.ChatServiceImpl - [saveMessage,68] - 聊天消息已保存: id=6a3972de7454a34a417d13d5, conversationId=2_5, senderId=2
+01:37:34.682 [http-nio-8080-exec-2] INFO  c.i.w.ChatWebSocket - [handleText,218] - 消息已保存: id=6a3972de7454a34a417d13d5, senderId=2, content='吱吱吱吱吱吱吱吱'
+01:37:34.712 [http-nio-8080-exec-2] INFO  c.i.s.i.MessageServiceImpl - [sendMessage,67] - 消息发送成功: id=235, senderId=2, receiverId=5
+01:37:41.188 [http-nio-8080-exec-10] INFO  c.i.s.i.MiMoSttService - [recognize,106] - ASR 识别完成，文本长度: 2
+01:37:42.693 [http-nio-8080-exec-5] INFO  c.i.w.ChatWebSocket - [handleTextMessage,126] - WS收到: type=text, userId=2, payload={"type":"text","content":"喂。","tempId":"temp_1782149862657"}
+01:37:42.702 [http-nio-8080-exec-5] INFO  c.i.s.i.ChatServiceImpl - [saveMessage,68] - 聊天消息已保存: id=6a3972e67454a34a417d13d6, conversationId=2_5, senderId=2
+01:37:42.703 [http-nio-8080-exec-5] INFO  c.i.w.ChatWebSocket - [handleText,218] - 消息已保存: id=6a3972e67454a34a417d13d6, senderId=2, content='喂。'
+01:37:42.718 [http-nio-8080-exec-5] INFO  c.i.s.i.MessageServiceImpl - [sendMessage,67] - 消息发送成功: id=236, senderId=2, receiverId=5
+01:37:45.684 [http-nio-8080-exec-3] INFO  c.i.w.ChatWebSocket - [handleTextMessage,126] - WS收到: type=text, userId=2, payload={"type":"text","content":"🤫","tempId":"temp_1782149865652"}
+01:37:45.693 [http-nio-8080-exec-3] INFO  c.i.s.i.ChatServiceImpl - [saveMessage,68] - 聊天消息已保存: id=6a3972e97454a34a417d13d7, conversationId=2_5, senderId=2
+01:37:45.694 [http-nio-8080-exec-3] INFO  c.i.w.ChatWebSocket - [handleText,218] - 消息已保存: id=6a3972e97454a34a417d13d7, senderId=2, content='🤫'
+01:37:45.711 [http-nio-8080-exec-3] INFO  c.i.s.i.MessageServiceImpl - [sendMessage,67] - 消息发送成功: id=237, senderId=2, receiverId=5
+01:37:47.934 [http-nio-8080-exec-6] INFO  c.i.w.ChatWebSocket - [afterConnectionClosed,452] - 聊天WebSocket断开: sessionId=d8663d5f-19a9-cada-e465-d8a6d66891dc, userId=2, conversationId=2_5
+01:37:47.949 [http-nio-8080-exec-9] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user-profile/2
+01:37:47.950 [http-nio-8080-exec-4] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:37:48.085 [http-nio-8080-exec-8] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2/resumes
+01:37:48.184 [http-nio-8080-exec-1] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/resume/9
+01:37:48.287 [http-nio-8080-exec-2] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/resume/8
+01:37:48.437 [http-nio-8080-exec-10] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/application/my
+01:37:48.561 [http-nio-8080-exec-5] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/job/favorites
+01:37:48.682 [http-nio-8080-exec-3] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/followed
+01:37:48.833 [http-nio-8080-exec-6] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/interview/user/2
+01:37:53.660 [http-nio-8080-exec-9] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:37:54.811 [http-nio-8080-exec-1] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:37:55.220 [http-nio-8080-exec-10] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/3/view
+01:37:55.337 [http-nio-8080-exec-5] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/3/followed
+01:37:57.796 [http-nio-8080-exec-4] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:38:00.014 [http-nio-8080-exec-8] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:38:00.458 [http-nio-8080-exec-10] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/3/view
+01:38:00.564 [http-nio-8080-exec-5] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/3/followed
+01:38:02.978 [http-nio-8080-exec-6] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:38:03.133 [http-nio-8080-exec-4] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/job/16902/favorite
+01:38:03.138 [http-nio-8080-exec-4] INFO  c.i.s.i.JobServiceImpl - [isFavorited,520] - isFavorited check: userId=2, jobId=16902, found=false, deleted=null
+01:38:03.245 [http-nio-8080-exec-9] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/job/guess
+01:38:03.245 [http-nio-8080-exec-7] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/application/my
+01:38:05.053 [http-nio-8080-exec-5] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/hot
+01:38:05.053 [http-nio-8080-exec-10] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+01:42:57.601 [http-nio-8080-exec-4] INFO  c.i.s.i.UserServiceImpl - [register,48] - 用户注册成功: id=35, username=admin, roleType=3
+04:48:20.570 [http-nio-8080-exec-9] INFO  o.a.t.u.h.p.Cookie - [log,173] - A cookie header was received [Hm_lvt_e98f2eab6ceb8688bc6d8fc5332ff093=1781474025,1781606494,1781645095,1781695013;] that contained an invalid cookie. That cookie will be ignored.
+ Note: further occurrences of this error will be logged at DEBUG level.
+04:48:20.578 [http-nio-8080-exec-2] INFO  o.a.t.u.h.p.Cookie - [log,173] - A cookie header was received [Hm_lvt_e98f2eab6ceb8688bc6d8fc5332ff093=1781474025,1781606494,1781645095,1781695013;] that contained an invalid cookie. That cookie will be ignored.
+ Note: further occurrences of this error will be logged at DEBUG level.
+13:59:22.614 [main] INFO  c.i.InterviewApplication - [logStarting,50] - Starting InterviewApplication using Java 19.0.2 with PID 40312 (E:\java\ai-interview\backend\target\classes started by TJJ in E:\java\ai-interview)
+13:59:22.618 [main] INFO  c.i.InterviewApplication - [logStartupProfileInfo,654] - No active profile set, falling back to 1 default profile: "default"
+13:59:28.477 [main] INFO  o.a.c.c.AprLifecycleListener - [log,173] - Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+13:59:28.486 [main] INFO  o.a.c.c.AprLifecycleListener - [log,173] - OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+13:59:28.499 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Initializing ProtocolHandler ["http-nio-8080"]
+13:59:28.501 [main] INFO  o.a.c.c.StandardService - [log,173] - Starting service [Tomcat]
+13:59:28.502 [main] INFO  o.a.c.c.StandardEngine - [log,173] - Starting Servlet engine: [Apache Tomcat/10.1.20]
+13:59:28.650 [main] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring embedded WebApplicationContext
+13:59:29.166 [main] INFO  c.z.h.HikariDataSource - [getConnection,110] - HikariPool-1 - Starting...
+13:59:29.366 [main] INFO  c.z.h.p.HikariPool - [checkFailFast,565] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3e2578ea
+13:59:29.369 [main] INFO  c.z.h.HikariDataSource - [getConnection,123] - HikariPool-1 - Start completed.
+13:59:30.217 [main] INFO  o.redisson.Version - [logVersion,43] - Redisson 3.27.0
+13:59:30.729 [redisson-netty-1-5] INFO  o.r.c.ConnectionsHolder - [lambda$createConnection$1,191] - 1 connections initialized for 192.168.150.105/192.168.150.105:6379
+13:59:30.860 [redisson-netty-1-19] INFO  o.r.c.ConnectionsHolder - [lambda$createConnection$1,191] - 24 connections initialized for 192.168.150.105/192.168.150.105:6379
+13:59:32.806 [main] INFO  o.m.driver.client - [info,71] - MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync|spring-boot", "version": "4.11.2"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/19.0.2+7-44"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=MongoCredential{mechanism=null, userName='admin', source='admin', password=<hidden>, mechanismProperties=<hidden>}, transportSettings=null, streamFactoryFactory=null, commandListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener@475a8415], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@58c48a23, com.mongodb.Jep395RecordCodecProvider@74ea1cd0, com.mongodb.KotlinCodecProvider@179e8859]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[192.168.150.105:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener@477dc93], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null}
+13:59:32.831 [cluster-ClusterId{value='6a3a20c4f35a6c3eef11b5ea', description='null'}-192.168.150.105:27017] INFO  o.m.driver.cluster - [info,71] - Monitor thread successfully connected to server with description ServerDescription{address=192.168.150.105:27017, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=29753500}
+13:59:36.226 [main] INFO  c.z.h.HikariDataSource - [close,350] - HikariPool-1 - Shutdown initiated...
+13:59:36.232 [main] INFO  c.z.h.HikariDataSource - [close,352] - HikariPool-1 - Shutdown completed.
+13:59:36.235 [main] INFO  o.a.c.c.StandardService - [log,173] - Stopping service [Tomcat]
+14:01:12.506 [main] INFO  c.i.InterviewApplication - [logStarting,50] - Starting InterviewApplication using Java 19.0.2 with PID 28104 (E:\java\ai-interview\backend\target\classes started by TJJ in E:\java\ai-interview)
+14:01:12.509 [main] INFO  c.i.InterviewApplication - [logStartupProfileInfo,654] - No active profile set, falling back to 1 default profile: "default"
+14:01:15.163 [main] INFO  o.a.c.c.AprLifecycleListener - [log,173] - Loaded Apache Tomcat Native library [2.0.8] using APR version [1.7.4].
+14:01:15.173 [main] INFO  o.a.c.c.AprLifecycleListener - [log,173] - OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+14:01:15.186 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Initializing ProtocolHandler ["http-nio-8080"]
+14:01:15.190 [main] INFO  o.a.c.c.StandardService - [log,173] - Starting service [Tomcat]
+14:01:15.191 [main] INFO  o.a.c.c.StandardEngine - [log,173] - Starting Servlet engine: [Apache Tomcat/10.1.20]
+14:01:15.354 [main] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring embedded WebApplicationContext
+14:01:15.926 [main] INFO  c.z.h.HikariDataSource - [getConnection,110] - HikariPool-1 - Starting...
+14:01:16.160 [main] INFO  c.z.h.p.HikariPool - [checkFailFast,565] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@21688427
+14:01:16.164 [main] INFO  c.z.h.HikariDataSource - [getConnection,123] - HikariPool-1 - Start completed.
+14:01:16.774 [main] INFO  o.redisson.Version - [logVersion,43] - Redisson 3.27.0
+14:01:17.202 [redisson-netty-1-5] INFO  o.r.c.ConnectionsHolder - [lambda$createConnection$1,191] - 1 connections initialized for 192.168.150.105/192.168.150.105:6379
+14:01:17.315 [redisson-netty-1-19] INFO  o.r.c.ConnectionsHolder - [lambda$createConnection$1,191] - 24 connections initialized for 192.168.150.105/192.168.150.105:6379
+14:01:18.682 [main] INFO  o.m.driver.client - [info,71] - MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync|spring-boot", "version": "4.11.2"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/19.0.2+7-44"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=MongoCredential{mechanism=null, userName='admin', source='admin', password=<hidden>, mechanismProperties=<hidden>}, transportSettings=null, streamFactoryFactory=null, commandListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener@6179af64], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@193f5509, com.mongodb.Jep395RecordCodecProvider@475a8415, com.mongodb.KotlinCodecProvider@58c48a23]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[192.168.150.105:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener@74ea1cd0], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null}
+14:01:18.702 [cluster-ClusterId{value='6a3a212e1f644f7c320bf814', description='null'}-192.168.150.105:27017] INFO  o.m.driver.cluster - [info,71] - Monitor thread successfully connected to server with description ServerDescription{address=192.168.150.105:27017, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=25729500}
+14:01:21.179 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Starting ProtocolHandler ["http-nio-8080"]
+14:01:21.377 [main] INFO  c.i.InterviewApplication - [logStarted,56] - Started InterviewApplication in 9.514 seconds (process running for 10.562)
+14:01:21.796 [RMI TCP Connection(2)-10.117.190.4] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+14:06:46.775 [http-nio-8080-exec-3] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2
+14:06:48.043 [http-nio-8080-exec-7] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+14:06:48.478 [http-nio-8080-exec-8] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+14:06:48.494 [http-nio-8080-exec-9] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/hot
+14:06:48.823 [http-nio-8080-exec-1] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/subscribe
+14:06:48.824 [http-nio-8080-exec-2] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+14:06:48.830 [http-nio-8080-exec-1] INFO  c.i.s.SseEmitterManager - [addEmitter,31] - SSE连接注册: userId=2, 当前在线数=1
+14:06:48.831 [http-nio-8080-exec-1] INFO  c.i.c.SseController - [subscribe,68] - SSE订阅成功: userId=2
+14:06:48.918 [http-nio-8080-exec-4] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+14:06:49.019 [http-nio-8080-exec-3] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+16:14:51.301 [http-nio-8080-exec-2] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/hot
+16:14:51.305 [http-nio-8080-exec-4] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+16:14:51.306 [http-nio-8080-exec-6] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+16:14:51.310 [http-nio-8080-exec-5] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/subscribe
+16:14:51.322 [http-nio-8080-exec-5] INFO  c.i.s.SseEmitterManager - [addEmitter,31] - SSE连接注册: userId=2, 当前在线数=1
+16:14:51.323 [http-nio-8080-exec-5] INFO  c.i.c.SseController - [subscribe,68] - SSE订阅成功: userId=2
+16:14:51.347 [http-nio-8080-exec-7] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+16:14:51.370 [http-nio-8080-exec-10] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+16:14:51.449 [http-nio-8080-exec-6] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+16:27:17.998 [http-nio-8080-exec-3] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2
+16:27:18.413 [http-nio-8080-exec-9] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2
+16:27:18.436 [http-nio-8080-exec-7] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2
+18:23:08.534 [cluster-ClusterId{value='6a3a212e1f644f7c320bf814', description='null'}-192.168.150.105:27017] INFO  o.m.driver.cluster - [info,76] - Exception in monitor thread while connecting to server 192.168.150.105:27017
+com.mongodb.MongoSocketReadException: Exception receiving message
+	at com.mongodb.internal.connection.InternalStreamConnection.translateReadException(InternalStreamConnection.java:730)
+	at com.mongodb.internal.connection.InternalStreamConnection.receiveMessageWithAdditionalTimeout(InternalStreamConnection.java:606)
+	at com.mongodb.internal.connection.InternalStreamConnection.receiveCommandMessageResponse(InternalStreamConnection.java:451)
+	at com.mongodb.internal.connection.InternalStreamConnection.receive(InternalStreamConnection.java:404)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.lookupServerDescription(DefaultServerMonitor.java:221)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:153)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+Caused by: java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.NioSocketImpl.implRead(NioSocketImpl.java:313)
+	at java.base/sun.nio.ch.NioSocketImpl.read(NioSocketImpl.java:340)
+	at java.base/sun.nio.ch.NioSocketImpl$1.read(NioSocketImpl.java:789)
+	at java.base/java.net.Socket$SocketInputStream.read(Socket.java:1025)
+	at com.mongodb.internal.connection.SocketStream.read(SocketStream.java:175)
+	at com.mongodb.internal.connection.SocketStream.read(SocketStream.java:200)
+	at com.mongodb.internal.connection.InternalStreamConnection.receiveResponseBuffers(InternalStreamConnection.java:739)
+	at com.mongodb.internal.connection.InternalStreamConnection.receiveMessageWithAdditionalTimeout(InternalStreamConnection.java:603)
+	... 5 common frames omitted
+18:23:08.832 [cluster-ClusterId{value='6a3a212e1f644f7c320bf814', description='null'}-192.168.150.105:27017] INFO  o.m.driver.cluster - [info,76] - Exception in monitor thread while connecting to server 192.168.150.105:27017
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.lambda$open$0(SocketStream.java:84)
+	at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:84)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:211)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.lookupServerDescription(DefaultServerMonitor.java:193)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:153)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+Caused by: java.net.SocketException: Network is unreachable: no further information
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:672)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:535)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:585)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:666)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:76)
+	at com.mongodb.internal.connection.SocketStream.initializeSocket(SocketStream.java:104)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:78)
+	... 4 common frames omitted
+18:24:40.221 [cluster-ClusterId{value='6a3a212e1f644f7c320bf814', description='null'}-192.168.150.105:27017] INFO  o.m.driver.cluster - [info,71] - Monitor thread successfully connected to server with description ServerDescription{address=192.168.150.105:27017, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=10293700}
+19:18:55.793 [http-nio-8080-exec-8] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2
+19:18:56.719 [http-nio-8080-exec-10] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2
+19:18:56.757 [http-nio-8080-exec-4] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2
+19:19:12.819 [http-nio-8080-exec-2] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/user/2
+19:19:14.511 [http-nio-8080-exec-6] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+19:19:14.512 [http-nio-8080-exec-1] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+19:19:14.637 [http-nio-8080-exec-3] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/company/hot
+19:19:14.717 [http-nio-8080-exec-7] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/subscribe
+19:19:14.727 [http-nio-8080-exec-7] INFO  c.i.s.SseEmitterManager - [addEmitter,31] - SSE连接注册: userId=2, 当前在线数=1
+19:19:14.732 [http-nio-8080-exec-7] INFO  c.i.c.SseController - [subscribe,68] - SSE订阅成功: userId=2
+19:19:14.768 [http-nio-8080-exec-10] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/conversations
+19:19:14.850 [http-nio-8080-exec-2] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+19:19:14.957 [http-nio-8080-exec-6] INFO  c.i.filter.JwtFilter - [doFilterInternal,96] - JWT解析: userId=2, username=tjj, roleType=1, path=/api/message/unread-count
+19:38:50.496 [http-nio-8080-exec-9] INFO  c.i.s.SseEmitterManager - [removeEmitterIfCurrent,50] - SSE连接移除(条件匹配): userId=2, 当前在线数=0
+19:38:50.929 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,350] - HikariPool-1 - Shutdown initiated...
+19:38:50.939 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,352] - HikariPool-1 - Shutdown completed.

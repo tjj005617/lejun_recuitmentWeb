@@ -9,7 +9,11 @@ const request = axios.create({
 // 请求拦截器
 request.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('token')
+    // 管理后台接口使用 admin_token，其他接口使用 token
+    const isAdminApi = config.url && config.url.startsWith('/api/admin')
+    const token = isAdminApi
+      ? localStorage.getItem('admin_token')
+      : localStorage.getItem('token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -31,8 +35,17 @@ request.interceptors.response.use(
     return res
   },
   error => {
+    const status = error.response?.status
     // 401 未授权（退出登录后 token 失效），静默处理，不弹错误框
-    if (error.response?.status !== 401) {
+    if (status === 401) {
+      // 管理后台 token 失效，清除并跳转登录页
+      if (error.config?.url?.startsWith('/api/admin')) {
+        localStorage.removeItem('admin_token')
+        window.location.href = '/admin/login'
+      }
+    } else if (status === 403) {
+      ElMessage.error('无权限访问')
+    } else {
       ElMessage.error(error.message || '网络错误')
     }
     return Promise.reject(error)

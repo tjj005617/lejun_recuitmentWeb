@@ -1,1 +1,0 @@
-import{t as e}from"./request-ssHbiI1N.js";var t=t=>e.get(`/user/${t}`),n=t=>e.get(`/user/${t}/resumes`),r=t=>e.get(`/user-profile/${t}`),i=(t,n)=>e.put(`/user-profile/${t}`,n);export{i,r as n,n as r,t};

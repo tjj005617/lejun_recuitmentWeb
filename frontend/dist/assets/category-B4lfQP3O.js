@@ -1,1 +1,0 @@
-import{t as e}from"./request-ssHbiI1N.js";var t=()=>e.get(`/category/tree`);export{t};

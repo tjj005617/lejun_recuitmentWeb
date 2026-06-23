@@ -1,1 +1,0 @@
-import{t as e}from"./request-ssHbiI1N.js";var t=t=>e.post(`/application`,t),n=t=>e.delete(`/application/${t}`),r=()=>e.get(`/application/my`),i=t=>e.get(`/application/job/${t}`),a=(t,n)=>e.put(`/application/${t}/status`,n),o=t=>e.get(`/application/company/${t}`);export{a,r as i,o as n,n as o,i as r,t};

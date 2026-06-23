@@ -1,0 +1,1 @@
+import{t as e}from"./request-DZt9BxNI.js";var t=t=>e.get(`/resume/${t}`),n=t=>e.get(`/user/${t}/resumes`);export{n,t};

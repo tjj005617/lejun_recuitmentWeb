@@ -132,6 +132,7 @@ CREATE TABLE IF NOT EXISTS company (
     address VARCHAR(200) COMMENT '详细地址（街道门牌号）',
     website VARCHAR(200) COMMENT '公司官网',
     description TEXT COMMENT '公司介绍',
+    status VARCHAR(20) DEFAULT 'active' COMMENT '状态：active-正常 disabled-禁用',
     view_count INTEGER DEFAULT 0 COMMENT '浏览量',
     follow_count INTEGER DEFAULT 0 COMMENT '关注数',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -141,7 +142,8 @@ CREATE TABLE IF NOT EXISTS company (
     deleted INTEGER DEFAULT 0,
     INDEX idx_user_id (user_id),
     INDEX idx_city (city),
-    INDEX idx_region_id (region_id)
+    INDEX idx_region_id (region_id),
+    INDEX idx_status (status)
 );
 
 -- 用户-公司关注关系表
@@ -161,12 +163,15 @@ CREATE TABLE IF NOT EXISTS job_category (
     name VARCHAR(50) NOT NULL COMMENT '分类名称',
     parent_id INTEGER DEFAULT 0 COMMENT '父分类ID',
     sort_order INTEGER DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'active' COMMENT '状态：active-启用 disabled-禁用',
+    description VARCHAR(200) COMMENT '分类描述',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by INTEGER COMMENT '创建人ID',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by INTEGER COMMENT '修改人ID',
     deleted INTEGER DEFAULT 0,
-    UNIQUE INDEX uk_name_parent (name, parent_id)
+    UNIQUE INDEX uk_name_parent (name, parent_id),
+    INDEX idx_status (status)
 );
 
 -- 初始化职位分类
@@ -199,7 +204,7 @@ CREATE TABLE IF NOT EXISTS job (
     education VARCHAR(50) COMMENT '学历要求',
     description TEXT NOT NULL COMMENT '职位描述',
     requirements TEXT COMMENT '任职要求',
-    status VARCHAR(20) DEFAULT 'active' COMMENT '状态：active/paused/closed',
+    status VARCHAR(20) DEFAULT 'active' COMMENT '状态：pending-待审核 active-招聘中 paused-暂停 closed-已关闭 rejected-已拒绝',
     view_count INTEGER DEFAULT 0 COMMENT '浏览次数',
     apply_count INTEGER DEFAULT 0 COMMENT '申请次数',
     published_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -273,9 +278,12 @@ CREATE TABLE IF NOT EXISTS region (
     name VARCHAR(50) NOT NULL COMMENT '名称',
     parent_id INTEGER DEFAULT 0 COMMENT '父级ID（0=省级）',
     level TINYINT NOT NULL COMMENT '层级：1=省 2=市 3=区',
+    status VARCHAR(20) DEFAULT 'active' COMMENT '状态：active-启用 disabled-禁用',
+    sort_order INTEGER DEFAULT 0 COMMENT '排序权重',
     area_code VARCHAR(20) COMMENT '行政区划代码',
     INDEX idx_parent_id (parent_id),
-    INDEX idx_level (level)
+    INDEX idx_level (level),
+    INDEX idx_status (status)
 );
 
 -- 福利标签表
