@@ -72,14 +72,14 @@ redisson:
 
 # AI配置 (Spring AI OpenAI SDK 默认拼接 /v1/chat/completions，baseUrl 不要带 /v1)
 ai:
-  api-key: sk-c5adv57e3za0pjemrmmp1cjlgfuheuk9poh6fuol97488zax
+  api-key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   api-url: https://api.xiaomimimo.com
   model: mimo-v2.5-pro
   timeout: 120
 
 # DeepSeek 配置 (Spring AI OpenAI SDK 自动拼接 /v1/chat/completions，baseUrl 不要带 /v1)
 deepseek:
-  api-key: sk-d6682169b2c744a99ee9af29f376a623
+  api-key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   api-url: https://api.deepseek.com
   model: deepseek-v4-flash
   timeout: 120
