@@ -69,6 +69,9 @@ CREATE TABLE IF NOT EXISTS interview (
     user_id INTEGER COMMENT '用户ID',
     resume_id INTEGER COMMENT '简历ID',
     job_type VARCHAR(50) COMMENT '岗位类型',
+    interview_mode VARCHAR(20) DEFAULT 'resume' COMMENT '面试模式：resume/topic/hybrid',
+    category_ids VARCHAR(500) COMMENT '八股分类ID列表，逗号分隔',
+    question_type VARCHAR(20) DEFAULT 'essay' COMMENT '题型：essay=简答 choice=选择',
     total_rounds INTEGER DEFAULT 10 COMMENT '总轮数',
     current_round INTEGER DEFAULT 0 COMMENT '当前轮数',
     status VARCHAR(20) DEFAULT 'PENDING' COMMENT '状态',
@@ -419,18 +422,6 @@ CREATE TABLE IF NOT EXISTS kg_category (
     UNIQUE INDEX uk_bucket (bucket)
 ) COMMENT '知识图谱大类';
 
--- 初始化知识图谱大类
-INSERT INTO kg_category (name, bucket, sort_order) VALUES
-('Java', 'kg-java', 1),
-('Python', 'kg-python', 2),
-('前端', 'kg-frontend', 3),
-('数据库', 'kg-database', 4),
-('操作系统', 'kg-os', 5),
-('计算机网络', 'kg-network', 6),
-('算法与数据结构', 'kg-algorithm', 7),
-('系统设计', 'kg-system-design', 8)
-ON DUPLICATE KEY UPDATE bucket=VALUES(bucket);
-
 -- 知识图谱文档（上传的 MD 文件）
 CREATE TABLE IF NOT EXISTS kg_document (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -524,3 +515,11 @@ CREATE TABLE IF NOT EXISTS kg_processing_task (
     INDEX idx_document_id (document_id),
     INDEX idx_status (status)
 ) COMMENT '知识图谱处理任务';
+
+-- 岗位向量同步状态表（用于追踪 Milvus 同步进度）
+CREATE TABLE IF NOT EXISTS job_embedding_sync (
+    job_id INTEGER PRIMARY KEY COMMENT '岗位ID',
+    synced_at TIMESTAMP NULL COMMENT '最后同步时间',
+    status VARCHAR(20) DEFAULT 'pending' COMMENT 'pending/synced/failed',
+    INDEX idx_status (status)
+) COMMENT '岗位向量同步状态';

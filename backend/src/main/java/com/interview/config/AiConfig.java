@@ -40,7 +40,7 @@ import java.time.Duration;
  * <p>会话记忆 key 格式：ai:interview:{interviewId}_{userId}</p>
  */
 @Configuration
-@EnableConfigurationProperties({AiProperties.class, DeepSeekProperties.class})
+@EnableConfigurationProperties({AiProperties.class, DeepSeekProperties.class, DashScopeProperties.class})
 public class AiConfig {
 
     // ==================== 会话记忆存储层 ====================
@@ -126,6 +126,7 @@ public class AiConfig {
             .openAiApi(openAiApi)
             .defaultOptions(OpenAiChatOptions.builder()
                 .model(aiProperties.getModel())
+                .temperature(1.2)  // 提高随机性，让每次面试题目更多样
                 .build())
             .build();
 

@@ -5,6 +5,7 @@ import com.interview.domain.vo.KgDocumentVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 知识图谱文档服务接口
@@ -21,9 +22,18 @@ public interface KgDocumentService {
     KgDocument uploadDocument(MultipartFile file, String categoryName, String title);
 
     /**
-     * 根据分类分页查询文档列表
+     * 批量上传文档并触发异步处理
+     *
+     * @param files        上传的文件数组
+     * @param categoryName 可选分类名称，为空时 AI 自动分类
      */
-    List<KgDocumentVO> listByCategory(Long categoryId, int page, int size);
+    List<KgDocument> batchUploadDocuments(MultipartFile[] files, String categoryName);
+
+    /**
+     * 根据分类分页查询文档列表
+     * 返回 Map: { records: List<KgDocumentVO>, total: long }
+     */
+    Map<String, Object> listByCategory(Long categoryId, int page, int size);
 
     /**
      * 获取文档详情

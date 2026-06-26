@@ -372,37 +372,46 @@
               <h2>AI模拟面试</h2>
             </div>
             <div class="ai-interview-card">
-              <div class="ai-interview-card__icon">🤖</div>
               <div class="ai-interview-card__content">
-                <h3>开始AI模拟面试</h3>
-                <p>选择简历，AI智能出题，助你面试无忧</p>
+                <h3>选择面试模式</h3>
+                <p>支持简历分析、八股栏目、混合三种模式，AI智能出题</p>
               </div>
             </div>
-            <div v-if="resumeList.length === 0" class="empty-state">
-              <el-empty description="请先上传简历">
-                <el-button type="primary" @click="$router.push('/upload')">上传简历</el-button>
-              </el-empty>
-            </div>
-            <div v-else class="ai-resume-select">
-              <h4>选择用于面试的简历：</h4>
-              <div class="ai-resume-list">
-                <div
-                  v-for="resume in resumeList"
-                  :key="resume.id"
-                  class="ai-resume-item"
-                  @click="startInterview(resume.id)"
-                >
-                  <div class="ai-resume-item__icon"> </div>
-                  <div class="ai-resume-item__info">
-                    <div class="ai-resume-item__name">{{ resume.fileName }}</div>
-                    <div class="ai-resume-item__meta">
-                      <span v-if="resume.name">{{ resume.name }}</span>
-                      <span v-if="resume.education">· {{ resume.education }}</span>
-                    </div>
-                  </div>
-                  <el-button type="primary" size="small">选择</el-button>
-                </div>
+            <!-- 三种模式卡片 -->
+            <div class="ai-mode-grid">
+              <div class="ai-mode-card" @click="$router.push('/upload?mode=resume')">
+                <div class="ai-mode-card__icon"> </div>
+                <h4>简历分析</h4>
+                <p>上传简历，AI根据你的经历智能出题</p>
               </div>
+              <div class="ai-mode-card" @click="$router.push('/upload?mode=topic')">
+                <div class="ai-mode-card__icon"> </div>
+                <h4>八股栏目</h4>
+                <p>选择技术领域，针对性考察八股知识</p>
+              </div>
+              <div class="ai-mode-card" @click="$router.push('/upload?mode=hybrid')">
+                <div class="ai-mode-card__icon">✨</div>
+                <h4>混合模式</h4>
+                <p>简历分析 + 八股栏目，全面考察</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 八股面试 -->
+          <div v-show="activeTab === 'knowledge-graph'" class="content-panel">
+            <div class="content-header">
+              <h2>八股面试专栏</h2>
+            </div>
+            <div class="ai-interview-card">
+              <div class="ai-interview-card__icon"> </div>
+              <div class="ai-interview-card__content">
+                <h3>知识图谱学习</h3>
+                <p>基于 AI 构建的技术知识图谱，浏览知识点关联关系，系统化准备面试</p>
+              </div>
+            </div>
+            <div class="empty-state" style="text-align: center; padding: 40px 0;">
+              <p style="color: #64748b; margin-bottom: 16px;">探索知识图谱，发现知识点之间的关联</p>
+              <el-button type="primary" @click="$router.push('/knowledge')">进入八股面试专栏</el-button>
             </div>
           </div>
         </main>
@@ -604,7 +613,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowRight, Document, Star, Timer, MagicStick, Upload, User } from '@element-plus/icons-vue'
+import { ArrowRight, Document, Star, Timer, MagicStick, Upload, User, Collection } from '@element-plus/icons-vue'
 import axios from 'axios'
 import AppShell from '@/components/AppShell.vue'
 import { getMyFavorites } from '@/api/job'
@@ -630,7 +639,8 @@ const menuItems = computed(() => {
     { key: 'favorites', label: '我的收藏', icon: Star },
     { key: 'followed', label: '我的关注', icon: Star },
     { key: 'interviews', label: '面试记录', icon: Timer },
-    { key: 'ai-interview', label: 'AI模拟面试', icon: MagicStick }
+    { key: 'ai-interview', label: 'AI模拟面试', icon: MagicStick },
+    { key: 'knowledge-graph', label: '八股面试', icon: Collection }
   ]
   return items
 })
@@ -1557,6 +1567,49 @@ const getApplicationStatusText = (status) => {
   font-size: 14px;
   margin: 0 0 16px;
   opacity: 0.9;
+}
+
+/* 三种模式卡片 */
+.ai-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.ai-mode-card {
+  background: #fff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.ai-mode-card:hover {
+  border-color: #10b981;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.12);
+  transform: translateY(-3px);
+}
+
+.ai-mode-card__icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.ai-mode-card h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 8px;
+}
+
+.ai-mode-card p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
 }
 
 .empty-state {

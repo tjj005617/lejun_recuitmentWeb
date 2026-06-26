@@ -80,11 +80,10 @@
           <div class="ai-banner__content">
             <h3 class="ai-banner__title">AI模拟面试</h3>
             <p class="ai-banner__desc">上传简历，AI智能出题，助你面试无忧</p>
-            <el-button type="primary" @click="$router.push('/upload')">
+            <el-button type="primary" @click="$router.push('/user?tab=ai-interview')">
               立即体验
             </el-button>
           </div>
-          <div class="ai-banner__icon">🤖</div>
         </div>
       </div>
     </div>
@@ -396,11 +395,6 @@ onMounted(async () => {
   z-index: 1;
 }
 
-.ai-banner__icon {
-  position: relative;
-  z-index: 1;
-}
-
 .ai-banner__title {
   font-size: 28px;
   font-weight: 700;
@@ -411,10 +405,6 @@ onMounted(async () => {
   font-size: 16px;
   margin: 0 0 24px;
   opacity: 0.9;
-}
-
-.ai-banner__icon {
-  font-size: 80px;
 }
 
 /* 移动端适配 */
@@ -501,11 +491,6 @@ onMounted(async () => {
   .ai-banner__desc {
     font-size: 14px;
     margin-bottom: 16px;
-  }
-
-  .ai-banner__icon {
-    font-size: 48px;
-    margin-top: 16px;
   }
 }
 </style>

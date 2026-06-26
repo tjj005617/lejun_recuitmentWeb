@@ -25,9 +25,6 @@
           <router-link to="/companies" class="navbar__link" :class="{ active: $route.path === '/companies' }">
             公司搜索
           </router-link>
-          <router-link to="/knowledge" class="navbar__link" :class="{ active: $route.path.startsWith('/knowledge') }">
-            八股面试
-          </router-link>
           <router-link v-if="isLoggedIn" to="/user" class="navbar__link" :class="{ active: $route.path === '/user' }">
             个人中心
           </router-link>

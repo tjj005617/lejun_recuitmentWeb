@@ -80,11 +80,31 @@
             <div v-if="openQaIndex === index" class="qa-item__body">
               <div class="qa-item__section">
                 <span class="qa-item__tag qa-item__tag--q">问</span>
-                <p>{{ qa.question }}</p>
+                <div>
+                  <p>{{ parseQuestion(qa.question).text }}</p>
+                  <div v-if="parseQuestion(qa.question).options" class="qa-options">
+                    <div v-for="(val, key) in parseQuestion(qa.question).options" :key="key"
+                      class="qa-option" :class="{ 'qa-option--correct': parseQuestion(qa.question).correctAnswer === key }">
+                      <span class="qa-option__key">{{ key }}</span>
+                      <span class="qa-option__val">{{ val }}</span>
+                    </div>
+                  </div>
+                  <p v-if="parseQuestion(qa.question).explanation" class="qa-explanation">
+                    <strong>解析：</strong>{{ parseQuestion(qa.question).explanation }}
+                  </p>
+                </div>
               </div>
               <div class="qa-item__section">
                 <span class="qa-item__tag qa-item__tag--a">答</span>
-                <p>{{ qa.answer }}</p>
+                <div>
+                  <p>{{ parseAnswer(qa.answer).text }}</p>
+                  <span v-if="parseAnswer(qa.answer).selectedAnswer" class="qa-answer-badge"
+                    :class="parseAnswer(qa.answer).isCorrect === true ? 'qa-answer-badge--correct' : parseAnswer(qa.answer).isCorrect === false ? 'qa-answer-badge--wrong' : ''">
+                    {{ parseAnswer(qa.answer).selectedAnswer }}
+                    <template v-if="parseAnswer(qa.answer).isCorrect === true"> ✓</template>
+                    <template v-else-if="parseAnswer(qa.answer).isCorrect === false"> ✗</template>
+                  </span>
+                </div>
               </div>
               <div v-if="qa.feedback" class="qa-item__section">
                 <span class="qa-item__tag qa-item__tag--f">评</span>
@@ -298,6 +318,42 @@ const getScoreColor = (val) => {
   if (val >= 6) return '#10b981'
   if (val >= 4) return '#f59e0b'
   return '#ef4444'
+}
+
+/** 解析问题文本，支持 JSON 格式的选择题 */
+const parseQuestion = (text) => {
+  if (!text) return { text: '', options: null, correctAnswer: null, explanation: null }
+  const trimmed = String(text).trim()
+  if (!trimmed.startsWith('{')) return { text: trimmed, options: null, correctAnswer: null, explanation: null }
+  try {
+    const obj = JSON.parse(trimmed)
+    return {
+      text: obj.question || trimmed,
+      options: obj.options || null,
+      correctAnswer: obj.correctAnswer || null,
+      explanation: obj.explanation || null,
+      category: obj.category || null
+    }
+  } catch {
+    return { text: trimmed, options: null, correctAnswer: null, explanation: null }
+  }
+}
+
+/** 解析回答文本，支持 JSON 格式的选择题回答 */
+const parseAnswer = (text) => {
+  if (!text) return { text: '', selectedAnswer: null }
+  const trimmed = String(text).trim()
+  if (!trimmed.startsWith('{')) return { text: trimmed, selectedAnswer: null }
+  try {
+    const obj = JSON.parse(trimmed)
+    return {
+      text: obj.answer || obj.selectedAnswer || trimmed,
+      selectedAnswer: obj.selectedAnswer || null,
+      isCorrect: obj.isCorrect
+    }
+  } catch {
+    return { text: trimmed, selectedAnswer: null }
+  }
 }
 </script>
 
@@ -563,6 +619,66 @@ const getScoreColor = (val) => {
 .qa-item__tag--a { background: #ecfdf5; color: #059669; }
 .qa-item__tag--f { background: #fffbeb; color: #d97706; }
 .qa-item__tag--ref { background: #eff6ff; color: #2563eb; }
+
+/* 选项样式 */
+.qa-options {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qa-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #f9fafb;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.qa-option--correct {
+  background: #ecfdf5;
+  font-weight: 500;
+}
+
+.qa-option__key {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 16px;
+}
+
+.qa-option--correct .qa-option__key {
+  color: #10b981;
+}
+
+.qa-option__val {
+  color: #374151;
+}
+
+.qa-explanation {
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: #eff6ff;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #2563eb;
+}
+
+.qa-answer-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.qa-answer-badge--correct { background: #ecfdf5; color: #10b981; }
+.qa-answer-badge--wrong { background: #fef2f2; color: #ef4444; }
 
 /* Mini bars */
 .qa-item__bars {

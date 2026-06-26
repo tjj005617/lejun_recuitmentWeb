@@ -53,6 +53,19 @@ export const uploadKgDocument = (file, categoryName, title) => {
   })
 }
 
+/** 批量上传文档（可选指定分类名称，不填则 AI 自动分类） */
+export const batchUploadKgDocuments = (files, categoryName) => {
+  const formData = new FormData()
+  for (const file of files) {
+    formData.append('files', file)
+  }
+  if (categoryName) formData.append('categoryName', categoryName)
+  return request.post('/admin/kg/batch-upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 300000  // 批量上传超时5分钟
+  })
+}
+
 /** 重试处理失败的文档 */
 export const retryKgDocument = (documentId) =>
   request.post(`/admin/kg/retry/${documentId}`)

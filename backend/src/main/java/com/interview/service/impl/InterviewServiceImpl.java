@@ -17,7 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 面试服务实现类
@@ -45,19 +48,29 @@ public class InterviewServiceImpl implements InterviewService {
     private final ObjectMapper objectMapper;
 
     /**
-     * 创建面试
+     * 创建面试（兼容旧接口）
      */
     @Override
     public Interview createInterview(Long userId, Long resumeId, String jobType) {
+        return createInterview(userId, resumeId, jobType, "resume", null);
+    }
+
+    /**
+     * 创建面试（支持三种模式：resume/topic/hybrid）
+     */
+    @Override
+    public Interview createInterview(Long userId, Long resumeId, String jobType, String interviewMode, String categoryIds) {
         Interview interview = new Interview();
         interview.setUserId(userId);
         interview.setResumeId(resumeId);
         interview.setJobType(jobType);
+        interview.setInterviewMode(interviewMode);
+        interview.setCategoryIds(categoryIds);
         interview.setTotalRounds(10);
         interview.setCurrentRound(1);
         interview.setStatus("IN_PROGRESS");
         interviewMapper.insert(interview);
-        log.info("面试创建成功: id={}", interview.getId());
+        log.info("面试创建成功: id={}, mode={}", interview.getId(), interviewMode);
         return interview;
     }
 
@@ -154,21 +167,28 @@ public class InterviewServiceImpl implements InterviewService {
     }
 
     /**
-     * 同步批量生成所有面试问题
-     * 单次AI调用生成全部问题，存入数据库
+     * 同步批量生成所有面试问题（兼容旧接口）
      */
     @Override
     public List<String> generateAllQuestions(Interview interview, Resume resume) {
-        return generateAllQuestions(interview, resume, null);
+        return generateAllQuestions(interview, resume, null, null, null);
     }
 
     @Override
     public List<String> generateAllQuestions(Interview interview, Resume resume, String conversationId) {
+        return generateAllQuestions(interview, resume, conversationId, null, null);
+    }
+
+    /**
+     * 批量生成问题（支持分类上下文）
+     */
+    @Override
+    public List<String> generateAllQuestions(Interview interview, Resume resume, String conversationId, String interviewMode, List<String> categoryNames) {
         Long interviewId = interview.getId();
-        log.info("开始批量生成面试问题: interviewId={}", interviewId);
+        log.info("开始批量生成面试问题: interviewId={}, mode={}", interviewId, interviewMode);
 
         // 单次AI调用生成全部问题
-        List<String> questions = aiService.generateAllQuestions(resume, interview.getJobType(), conversationId);
+        List<String> questions = aiService.generateAllQuestions(resume, interview.getJobType(), conversationId, interviewMode, categoryNames);
         log.info("问题生成完成，共{}道: interviewId={}", questions.size(), interviewId);
 
         // 存入数据库
@@ -182,6 +202,125 @@ public class InterviewServiceImpl implements InterviewService {
 
         log.info("问题已入库: interviewId={}", interviewId);
         return questions;
+    }
+
+    /**
+     * 生成选择题（20道四选一）
+     */
+    @Override
+    public List<String> generateChoiceQuestions(Interview interview, Resume resume,
+            String conversationId, String interviewMode, List<String> categoryNames) {
+        Long interviewId = interview.getId();
+        log.info("开始生成选择题: interviewId={}, mode={}, resume={}, categoryNames={}", interviewId, interviewMode, resume != null ? "有" : "无", categoryNames);
+
+        try {
+            // AI 生成选择题（返回 List<Map>）
+            List<Map<String, Object>> choiceQuestions = aiService.generateChoiceQuestions(
+                    resume, interview.getJobType(), conversationId, interviewMode, categoryNames);
+            log.info("选择题生成完成，共{}道: interviewId={}", choiceQuestions.size(), interviewId);
+
+            // 将每道题序列化为 JSON 字符串存入 question 字段
+            List<String> questionStrs = new ArrayList<>();
+            for (int i = 0; i < choiceQuestions.size(); i++) {
+                Map<String, Object> q = choiceQuestions.get(i);
+                String questionJson = objectMapper.writeValueAsString(q);
+
+                InterviewQA qa = new InterviewQA();
+                qa.setInterviewId(interviewId);
+                qa.setRound(i + 1);
+                qa.setQuestion(questionJson);
+                interviewQAMapper.insert(qa);
+
+                questionStrs.add(questionJson);
+            }
+
+            // 设置总轮数
+            interview.setTotalRounds(choiceQuestions.size());
+            interviewMapper.updateById(interview);
+
+            log.info("选择题已入库: interviewId={}, 共{}道", interviewId, questionStrs.size());
+            return questionStrs;
+        } catch (Exception e) {
+            log.error("选择题生成异常: interviewId={}", interviewId, e);
+            throw new RuntimeException("选择题生成失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 提交选择题答案并判分
+     * 正确得5分，错误得0分，满分100
+     */
+    @Override
+    public Map<String, Object> submitChoiceAnswers(Long interviewId, Map<String, String> answers) {
+        List<InterviewQA> qaList = getQAHistory(interviewId);
+        int correctCount = 0;
+        int total = qaList.size();
+        List<Map<String, Object>> details = new ArrayList<>();
+
+        for (InterviewQA qa : qaList) {
+            int round = qa.getRound();
+            String userAnswer = answers.get(String.valueOf(round));
+            if (userAnswer == null) userAnswer = "";
+
+            // 从 question JSON 中提取正确答案和解析
+            String correctAnswer = "";
+            String explanation = "";
+            try {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> qData = objectMapper.readValue(qa.getQuestion(), Map.class);
+                correctAnswer = (String) qData.get("correctAnswer");
+                explanation = (String) qData.getOrDefault("explanation", "");
+            } catch (Exception e) {
+                log.error("解析选择题JSON失败: round={}", round, e);
+            }
+
+            boolean isCorrect = userAnswer.equalsIgnoreCase(correctAnswer);
+            if (isCorrect) correctCount++;
+
+            // 更新 QA 记录
+            qa.setAnswer(userAnswer);
+            try {
+                Map<String, Object> scoreMap = new HashMap<>();
+                scoreMap.put("correct", isCorrect);
+                scoreMap.put("correctAnswer", correctAnswer);
+                scoreMap.put("explanation", explanation);
+                scoreMap.put("totalScore", isCorrect ? 5.0 : 0.0);
+                qa.setScores(objectMapper.writeValueAsString(scoreMap));
+            } catch (Exception e) {
+                log.error("序列化评分失败", e);
+            }
+            qa.setFeedback(isCorrect ? "回答正确" : "回答错误，正确答案是 " + correctAnswer);
+            qa.setReferenceAnswer(explanation);
+            interviewQAMapper.updateById(qa);
+
+            // 收集详情
+            Map<String, Object> detail = new HashMap<>();
+            detail.put("round", round);
+            detail.put("userAnswer", userAnswer);
+            detail.put("correctAnswer", correctAnswer);
+            detail.put("correct", isCorrect);
+            detail.put("explanation", explanation);
+            details.add(detail);
+        }
+
+        // 计算总分（满分100）
+        double totalScore = total > 0 ? (correctCount * 100.0 / total) : 0;
+
+        // 更新面试记录
+        Interview interview = interviewMapper.selectById(interviewId);
+        interview.setTotalScore(totalScore);
+        interview.setStatus("COMPLETED");
+        interview.setCompletedAt(LocalDateTime.now());
+        interviewMapper.updateById(interview);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalScore", totalScore);
+        result.put("correctCount", correctCount);
+        result.put("total", total);
+        result.put("details", details);
+
+        log.info("选择题判分完成: interviewId={}, 正确{}/{}", interviewId, correctCount, total);
+        return result;
     }
 
     // ==================== 报告生成 ====================

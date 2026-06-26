@@ -22,6 +22,15 @@ public class Interview {
 
     private String jobType;
 
+    /** 面试模式：resume(简历分析) / topic(八股栏目) / hybrid(混合) */
+    private String interviewMode;
+
+    /** 八股分类ID列表，逗号分隔（如 "1,3,5"），仅topic/hybrid模式有值 */
+    private String categoryIds;
+
+    /** 题型：essay(简答题) / choice(选择题) */
+    private String questionType;
+
     private Integer totalRounds;
 
     private Integer currentRound;

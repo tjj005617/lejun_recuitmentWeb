@@ -9,52 +9,102 @@
           </div>
         </template>
 
-        <!-- 已有简历选择 -->
-        <div v-if="resumeList.length > 0" class="resume-select-section">
-          <div class="section-label">选择已有简历</div>
-          <div class="resume-select-list">
-            <div
-              v-for="r in resumeList"
-              :key="r.id"
-              class="resume-select-item"
-              :class="{ active: resumeId === r.id }"
-              @click="resumeId = r.id"
-            >
-              <div class="resume-select-item__icon"> </div>
-              <div class="resume-select-item__info">
-                <div class="resume-select-item__name">{{ r.fileName }}</div>
-                <div class="resume-select-item__meta">
-                  <span v-if="r.name">{{ r.name }}</span>
-                  <span v-if="r.education">· {{ r.education }}</span>
-                </div>
-              </div>
-              <el-icon v-if="resumeId === r.id" class="resume-select-item__check"><check /></el-icon>
-            </div>
-          </div>
-          <el-divider>或上传新简历</el-divider>
+        <!-- 面试模式标签 -->
+        <div class="mode-banner">
+          <span class="mode-banner__label">面试模式：</span>
+          <span class="mode-banner__tag">{{ modeLabel }}</span>
         </div>
 
-        <el-upload
-          class="upload-area"
-          drag
-          :action="`/api/resume/upload`"
-          :on-success="handleSuccess"
-          :on-error="handleError"
-          :before-upload="beforeUpload"
-        >
-          <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-          <div class="el-upload__text">
-            拖拽文件到此处，或<em>点击上传</em>
-          </div>
-          <template #tip>
-            <div class="el-upload__tip">
-              支持 PDF、DOCX、TXT 格式，文件大小不超过 10MB
+        <!-- 八股分类选择（topic/hybrid模式） -->
+        <div v-if="showCategorySelect" class="category-section">
+          <div class="section-label">选择考察领域（可多选）</div>
+          <div class="category-list">
+            <div
+              v-for="cat in categoryList"
+              :key="cat.id"
+              class="category-chip"
+              :class="{ active: selectedCategoryIds.includes(cat.id) }"
+              @click="toggleCategory(cat.id)"
+            >
+              <span class="category-chip__name">{{ cat.name }}</span>
             </div>
-          </template>
-        </el-upload>
+          </div>
+          <div v-if="selectedCategoryIds.length > 0" class="category-selected-tip">
+            已选择 {{ selectedCategoryIds.length }} 个领域
+          </div>
+        </div>
+
+        <!-- 题型选择（仅topic模式） -->
+        <div v-if="contentMode === 'topic' && selectedCategoryIds.length > 0" class="question-type-section">
+          <div class="section-label">选择题型</div>
+          <div class="question-type-list">
+            <div
+              class="question-type-card"
+              :class="{ active: questionType === 'essay' }"
+              @click="questionType = 'essay'"
+            >
+              <div class="question-type-card__name">简答面试</div>
+              <div class="question-type-card__desc">10道题目 · 文字/语音作答</div>
+            </div>
+            <div
+              class="question-type-card"
+              :class="{ active: questionType === 'choice' }"
+              @click="questionType = 'choice'"
+            >
+              <div class="question-type-card__name">选择题</div>
+              <div class="question-type-card__desc">20道题目 · ABCD四选一 · 自动判分</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 简历选择（resume/hybrid模式） -->
+        <div v-if="showResumeSection">
+          <div v-if="resumeList.length > 0" class="resume-select-section">
+            <div class="section-label">选择已有简历</div>
+            <div class="resume-select-list">
+              <div
+                v-for="r in resumeList"
+                :key="r.id"
+                class="resume-select-item"
+                :class="{ active: resumeId === r.id }"
+                @click="resumeId = r.id"
+              >
+                <div class="resume-select-item__icon"> </div>
+                <div class="resume-select-item__info">
+                  <div class="resume-select-item__name">{{ r.fileName }}</div>
+                  <div class="resume-select-item__meta">
+                    <span v-if="r.name">{{ r.name }}</span>
+                    <span v-if="r.education">· {{ r.education }}</span>
+                  </div>
+                </div>
+                <el-icon v-if="resumeId === r.id" class="resume-select-item__check"><check /></el-icon>
+              </div>
+            </div>
+            <el-divider>或上传新简历</el-divider>
+          </div>
+
+          <el-upload
+            class="upload-area"
+            drag
+            :action="`/api/resume/upload`"
+            :on-success="handleSuccess"
+            :on-error="handleError"
+            :before-upload="beforeUpload"
+          >
+            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+            <div class="el-upload__text">
+              拖拽文件到此处，或<em>点击上传</em>
+            </div>
+            <template #tip>
+              <div class="el-upload__tip">
+                支持 PDF、DOCX、TXT 格式，文件大小不超过 10MB
+              </div>
+            </template>
+          </el-upload>
+        </div>
 
         <Transition name="slide-fade">
-          <div v-if="resumeId" class="next-step">
+          <div v-if="canShowNextStep" class="next-step">
             <el-divider />
             <el-form :model="form" label-width="100px">
               <el-form-item label="应聘岗位">
@@ -67,8 +117,8 @@
                 </el-select>
               </el-form-item>
 
-              <!-- 面试模式选择 -->
-              <el-form-item label="面试模式">
+              <!-- 面试模式选择（选择题模式不需要） -->
+              <el-form-item v-if="questionType !== 'choice'" label="面试模式">
                 <div class="mode-select">
                   <div
                     class="mode-card"
@@ -108,7 +158,7 @@
               </el-form-item>
 
               <el-form-item>
-                <el-button type="primary" @click="startInterview" :disabled="!form.jobType" :loading="creating">
+                <el-button type="primary" @click="startInterview" :disabled="!form.jobType || creating" :loading="creating">
                   开始面试
                 </el-button>
               </el-form-item>
@@ -123,7 +173,7 @@
       <div v-if="creating" class="loading-overlay">
         <div class="loading-content">
           <div class="loading-avatar">面</div>
-          <div class="loading-text">AI 正在分析你的简历...</div>
+          <div class="loading-text">{{ loadingText }}</div>
           <div class="loading-progress">
             <div class="loading-progress__bar">
               <div class="loading-progress__fill" :style="{ width: progressPercent + '%' }"></div>
@@ -138,7 +188,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElIcon } from 'element-plus'
 import { Check, UploadFilled } from '@element-plus/icons-vue'
@@ -147,19 +197,68 @@ import AppShell from '@/components/AppShell.vue'
 import { useUserStore } from '@/stores/user'
 import { getUserResumes } from '@/api/user'
 import { getResume } from '@/api/resume'
+import { getKgCategories } from '@/api/knowledgeGraph'
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 const { user, isLoggedIn } = userStore
 
+// 面试内容模式：resume(简历分析) / topic(八股栏目) / hybrid(混合)
+const contentMode = ref(route.query.mode || 'resume')
 const resumeId = ref(route.query.resumeId ? Number(route.query.resumeId) : null)
 const resumeList = ref([])
 const form = ref({ jobType: '' })
-const interviewMode = ref('immersive') // 面试模式：text=文字面试, immersive=沉浸式面试
+const interviewMode = ref('immersive') // 面试交互模式：text=文字面试, immersive=沉浸式面试
 const creating = ref(false)
 const progressPercent = ref(0)
 let progressTimer = null
+
+// 八股分类相关
+const categoryList = ref([])
+const selectedCategoryIds = ref([])
+
+// 题型选择：essay(简答) / choice(选择题)
+const questionType = ref('essay')
+
+// 是否显示简历选择区域
+const showResumeSection = computed(() => contentMode.value !== 'topic')
+// 是否显示八股分类选择
+const showCategorySelect = computed(() => contentMode.value !== 'resume')
+// 是否可以显示下一步（岗位+面试模式）
+const canShowNextStep = computed(() => {
+  if (contentMode.value === 'resume') return !!resumeId.value
+  if (contentMode.value === 'topic') return selectedCategoryIds.value.length > 0
+  // hybrid模式：简历+分类都需要
+  return !!resumeId.value && selectedCategoryIds.value.length > 0
+})
+
+// 模式标签文本
+const modeLabel = computed(() => {
+  const map = { resume: '简历分析', topic: '八股栏目', hybrid: '混合模式' }
+  return map[contentMode.value] || '简历分析'
+})
+
+// 加载提示文案
+const loadingText = computed(() => {
+  if (questionType.value === 'choice') return 'AI 正在生成选择题...'
+  const map = {
+    resume: 'AI 正在分析你的简历...',
+    topic: 'AI 正在生成八股面试题...',
+    hybrid: 'AI 正在综合简历和知识点出题...'
+  }
+  return map[contentMode.value] || 'AI 正在准备面试...'
+})
+
+// 切换分类选中
+const toggleCategory = (id) => {
+  const idx = selectedCategoryIds.value.indexOf(id)
+  if (idx >= 0) {
+    selectedCategoryIds.value.splice(idx, 1)
+  } else {
+    selectedCategoryIds.value.push(id)
+  }
+}
 
 const tips = [
   '面试将围绕你的简历内容展开，加油！',
@@ -223,6 +322,16 @@ const loadResumes = async () => {
   }
 }
 
+// 加载八股分类列表
+const loadCategories = async () => {
+  try {
+    const res = await getKgCategories()
+    categoryList.value = (res.data || []).filter(c => c.enabled !== false)
+  } catch (e) {
+    console.error('加载分类列表失败', e)
+  }
+}
+
 // 未登录直接跳转登录页
 onMounted(() => {
   if (!isLoggedIn.value) {
@@ -231,6 +340,10 @@ onMounted(() => {
     return
   }
   loadResumes()
+  // topic/hybrid模式加载分类列表
+  if (contentMode.value !== 'resume') {
+    loadCategories()
+  }
 })
 
 onUnmounted(() => {
@@ -270,18 +383,30 @@ const startInterview = async () => {
   creating.value = true
   startProgress()
   try {
-    const response = await axios.post('/api/interview/create', {
+    const payload = {
       userId: user.value.id,
-      resumeId: resumeId.value,
-      jobType: form.value.jobType
-    })
+      jobType: form.value.jobType,
+      interviewMode: contentMode.value,
+      questionType: questionType.value
+    }
+    // 简历模式和混合模式需要resumeId
+    if (contentMode.value !== 'topic') {
+      payload.resumeId = resumeId.value
+    }
+    // 八股模式和混合模式需要categoryIds
+    if (contentMode.value !== 'resume') {
+      payload.categoryIds = selectedCategoryIds.value
+    }
+    const response = await axios.post('/api/interview/create', payload)
     if (response.data.success) {
       stopProgress()
       const { interview, questions } = response.data.data
       // 存储问题列表到sessionStorage，面试页面读取
       sessionStorage.setItem(`interview_questions_${interview.id}`, JSON.stringify(questions))
-      // 根据选择的面试模式跳转
-      if (interviewMode.value === 'immersive') {
+      // 根据题型和面试交互模式跳转
+      if (questionType.value === 'choice') {
+        router.push(`/interview/${interview.id}/choice`)
+      } else if (interviewMode.value === 'immersive') {
         router.push(`/interview/${interview.id}/immersive`)
       } else {
         router.push(`/interview/${interview.id}`)
@@ -326,6 +451,111 @@ const startInterview = async () => {
 
 .upload-area {
   width: 100%;
+}
+
+/* 面试模式标签 */
+.mode-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+}
+
+.mode-banner__label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.mode-banner__tag {
+  font-size: 13px;
+  font-weight: 600;
+  color: #059669;
+}
+
+/* 八股分类选择 */
+.category-section {
+  margin-bottom: 16px;
+}
+
+.category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.category-chip {
+  padding: 6px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  color: #4b5563;
+  user-select: none;
+}
+
+.category-chip:hover {
+  border-color: #10b981;
+  color: #059669;
+  background: #f0fdf4;
+}
+
+.category-chip.active {
+  border-color: #10b981;
+  background: #10b981;
+  color: #fff;
+}
+
+.category-selected-tip {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #10b981;
+}
+
+/* 题型选择 */
+.question-type-section {
+  margin-bottom: 16px;
+}
+
+.question-type-list {
+  display: flex;
+  gap: 12px;
+}
+
+.question-type-card {
+  flex: 1;
+  padding: 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.question-type-card:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+.question-type-card.active {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+.question-type-card__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.question-type-card__desc {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 4px;
 }
 
 /* 简历选择区域 */

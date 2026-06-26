@@ -32,6 +32,7 @@ const routes = [
   { path: '/user', name: 'UserCenter', component: () => import('../views/UserCenter.vue'), meta: { requiresAuth: true } },
   { path: '/upload', name: 'ResumeUpload', component: () => import('../views/ResumeUpload.vue'), meta: { requiresAuth: true } },
   { path: '/interview/:id/immersive', name: 'ImmersiveInterview', component: () => import('../views/ImmersiveInterview.vue'), meta: { requiresAuth: true } },
+  { path: '/interview/:id/choice', name: 'ChoiceInterview', component: () => import('../views/ChoiceInterview.vue'), meta: { requiresAuth: true } },
   { path: '/interview/:id', name: 'InterviewRoom', component: () => import('../views/InterviewRoom.vue'), meta: { requiresAuth: true } },
   { path: '/report/:id', name: 'ReportDetail', component: () => import('../views/ReportDetail.vue'), meta: { requiresAuth: true } },
   { path: '/messages', name: 'MessageCenter', component: () => import('../views/MessageCenter.vue'), meta: { requiresAuth: true } },

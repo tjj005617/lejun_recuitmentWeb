@@ -132,20 +132,19 @@
     <el-dialog v-model="uploadVisible" title="上传八股文档" width="520px" :close-on-click-modal="!processing" :close-on-press-escape="!processing" destroy-on-close>
       <!-- 上传表单 -->
       <el-form v-if="!processing" :model="uploadForm" ref="uploadFormRef" label-width="80px">
-        <el-form-item label="文档标题">
-          <el-input v-model="uploadForm.title" placeholder="可选，默认使用文件名" />
-        </el-form-item>
         <el-form-item label="所属分类">
           <el-input v-model="uploadForm.categoryName" placeholder="如：Java、前端、数据库（不填则 AI 自动分类）" />
         </el-form-item>
-        <el-form-item label="选择文件" prop="file">
+        <el-form-item label="选择文件">
           <el-upload
             ref="uploadRef"
             drag
+            multiple
             :auto-upload="false"
-            :limit="1"
+            :limit="20"
             accept=".md,.txt,.markdown"
             :on-change="handleFileChange"
+            :on-remove="handleFileRemove"
             :on-exceed="handleExceed"
           >
             <el-icon :size="40" style="color: #94a3b8;"><UploadFilled /></el-icon>
@@ -153,7 +152,7 @@
               拖拽文件到此处，或<em style="color: #10b981;">点击上传</em>
             </div>
             <div style="margin-top: 4px; color: #94a3b8; font-size: 12px;">
-              支持 .md / .txt 格式，AI 将自动提取知识点和关系
+              支持 .md / .txt 格式，可同时上传多个文件，AI 将自动提取知识点和关系
             </div>
           </el-upload>
         </el-form-item>
@@ -162,7 +161,10 @@
       <div v-else class="processing-view">
         <div class="processing-title">
           <el-icon class="is-loading" :size="20" style="color: #3b82f6;"><Loading /></el-icon>
-          <span>AI 正在处理文档...</span>
+          <span v-if="processingTotalFiles > 1">
+            AI 正在处理文档 ({{ processingCompletedFiles }}/{{ processingTotalFiles }})...
+          </span>
+          <span v-else>AI 正在处理文档...</span>
         </div>
         <el-progress
           :percentage="processingPercent"
@@ -236,7 +238,7 @@ import {
 } from '@element-plus/icons-vue'
 import {
   getAllKgCategories, getKgDocuments, getKgDocument,
-  uploadKgDocument, retryKgDocument, deleteKgDocument
+  uploadKgDocument, batchUploadKgDocuments, retryKgDocument, deleteKgDocument
 } from '@/api/knowledgeGraph'
 
 const router = useRouter()
@@ -256,10 +258,10 @@ const filterCategory = ref(null)
 const filterStatus = ref('')
 
 // 统计
-const totalDocuments = computed(() => documentList.value.length)
-const completedCount = computed(() => documentList.value.filter(d => d.parseStatus === 'completed').length)
-const failedCount = computed(() => documentList.value.filter(d => d.parseStatus === 'failed').length)
-const totalVertices = computed(() => documentList.value.reduce((s, d) => s + (d.vertexCount || 0), 0))
+const totalDocuments = computed(() => totalDocs.value)
+const completedCount = ref(0)
+const failedCount = ref(0)
+const totalVertices = ref(0)
 
 // 状态映射
 const statusType = (status) => ({
@@ -306,13 +308,18 @@ const loadDocuments = async () => {
   loading.value = true
   try {
     const res = await getKgDocuments(filterCategory.value, currentPage.value, pageSize.value)
-    let list = res.data || []
+    const data = res.data || {}
+    let list = data.records || []
     // 前端按状态筛选（后端暂不支持）
     if (filterStatus.value) {
       list = list.filter(d => d.parseStatus === filterStatus.value)
     }
     documentList.value = list
-    totalDocs.value = list.length
+    totalDocs.value = data.total || 0
+    // 使用后端返回的统计数据
+    completedCount.value = data.completedCount || 0
+    failedCount.value = data.failedCount || 0
+    totalVertices.value = data.totalVertices || 0
   } catch (e) {
     console.error('加载文档失败', e)
   } finally {
@@ -325,7 +332,7 @@ const uploadVisible = ref(false)
 const uploading = ref(false)
 const uploadFormRef = ref()
 const uploadRef = ref()
-const uploadForm = reactive({ title: '', categoryName: '', file: null })
+const uploadForm = reactive({ categoryName: '', files: [] })
 
 // 处理进度
 const processing = ref(false)
@@ -333,8 +340,10 @@ const processingPercent = ref(0)
 const processingStep = ref('')
 const processingResult = ref('') // completed / failed / ''
 const processingErrorMsg = ref('')
-const processingDocId = ref(null)
-let kgEventSource = null
+const processingTotalFiles = ref(0)
+const processingCompletedFiles = ref(0)
+const processingDocIds = ref([]) // 所有待处理文档ID
+let kgEventSources = [] // 所有SSE连接
 
 // 步骤 → 中文标签
 const stepLabelMap = {
@@ -356,38 +365,46 @@ const processingStatus = computed(() => {
   return ''
 })
 
-const handleFileChange = (file) => {
-  uploadForm.file = file.raw
+const handleFileChange = (file, fileList) => {
+  uploadForm.files = fileList.map(f => f.raw)
+}
+
+const handleFileRemove = (file, fileList) => {
+  uploadForm.files = fileList.map(f => f.raw)
 }
 
 const handleExceed = () => {
-  ElMessage.warning('只能上传一个文件，请先移除已选文件')
+  ElMessage.warning('最多同时上传20个文件')
 }
 
 const handleUpload = async () => {
-  if (!uploadForm.file) {
+  if (!uploadForm.files || uploadForm.files.length === 0) {
     ElMessage.warning('请选择文件')
     return
   }
 
   uploading.value = true
   try {
-    const res = await uploadKgDocument(uploadForm.file, uploadForm.categoryName, uploadForm.title)
-    processingDocId.value = res.data?.id
+    const res = await batchUploadKgDocuments(uploadForm.files, uploadForm.categoryName)
+    const docs = res.data || []
     // 切换到进度视图
     processing.value = true
     processingPercent.value = 0
     processingStep.value = 'parse'
     processingResult.value = ''
     processingErrorMsg.value = ''
+    processingTotalFiles.value = docs.length
+    processingCompletedFiles.value = 0
+    processingDocIds.value = docs.map(d => d.id)
     // 清空表单
-    uploadForm.file = null
-    uploadForm.title = ''
+    uploadForm.files = []
     uploadForm.categoryName = ''
     if (uploadRef.value) uploadRef.value.clearFiles()
     loadDocuments()
-    // 连接 SSE 接收处理进度
-    connectKgSSE(res.data.id)
+    // 同时连接所有文档的 SSE，避免顺序连接导致进度丢失
+    if (docs.length > 0) {
+      connectAllKgSSE(docs)
+    }
   } catch (e) {
     ElMessage.error('上传失败: ' + (e.message || '未知错误'))
   } finally {
@@ -395,52 +412,68 @@ const handleUpload = async () => {
   }
 }
 
-/** 连接 SSE 接收文档处理进度 */
-const connectKgSSE = (documentId) => {
-  disconnectKgSSE()
+/** 同时连接所有文档的 SSE，实时聚合进度 */
+const connectAllKgSSE = (docs) => {
+  disconnectAllKgSSE()
   const token = localStorage.getItem('admin_token')
   if (!token) return
   const apiBase = import.meta.env.VITE_API_BASE_URL || '/api'
-  const es = new EventSource(
-    `${apiBase}/admin/kg/subscribe?token=${token}&documentId=${documentId}`
-  )
 
-  es.addEventListener('kg_progress', (e) => {
-    try {
-      const data = JSON.parse(e.data)
-      processingStep.value = data.step
-      processingPercent.value = data.progress
-      if (data.status === 'completed') {
-        processingResult.value = 'completed'
-        processingPercent.value = 100
-        disconnectKgSSE()
-      } else if (data.status === 'failed') {
-        processingResult.value = 'failed'
-        processingErrorMsg.value = data.errorMessage || '未知错误'
-        disconnectKgSSE()
-      }
-    } catch { /* 静默 */ }
+  docs.forEach((doc) => {
+    const es = new EventSource(
+      `${apiBase}/admin/kg/subscribe?token=${token}&documentId=${doc.id}`
+    )
+
+    es.addEventListener('kg_progress', (e) => {
+      try {
+        const data = JSON.parse(e.data)
+        if (data.status === 'completed') {
+          processingCompletedFiles.value++
+          // 取所有文件中最大的 step 作为当前步骤
+          if (data.step) processingStep.value = data.step
+          if (processingCompletedFiles.value >= processingTotalFiles.value) {
+            processingResult.value = 'completed'
+            processingPercent.value = 100
+            disconnectAllKgSSE()
+            loadDocuments()
+          }
+        } else if (data.status === 'failed') {
+          processingResult.value = 'failed'
+          processingErrorMsg.value = data.errorMessage || '未知错误'
+          disconnectAllKgSSE()
+        } else {
+          // 更新当前步骤
+          if (data.step) processingStep.value = data.step
+        }
+        // 每个文件完成后刷新列表，获取最新状态
+        if (data.status === 'completed' || data.status === 'failed') {
+          loadDocuments()
+        }
+      } catch { /* 静默 */ }
+    })
+
+    es.onerror = () => {
+      es.close()
+    }
+
+    kgEventSources.push(es)
   })
-
-  es.onerror = () => {
-    disconnectKgSSE()
-  }
-
-  kgEventSource = es
 }
 
-const disconnectKgSSE = () => {
-  if (kgEventSource) {
-    kgEventSource.close()
-    kgEventSource = null
-  }
+const disconnectAllKgSSE = () => {
+  kgEventSources.forEach(es => {
+    try { es.close() } catch {}
+  })
+  kgEventSources = []
 }
 
 const closeProcessing = () => {
-  disconnectKgSSE()
+  disconnectAllKgSSE()
   processing.value = false
-  processingDocId.value = null
   processingResult.value = ''
+  processingTotalFiles.value = 0
+  processingCompletedFiles.value = 0
+  processingDocIds.value = []
   uploadVisible.value = false
   loadDocuments()
 }
@@ -459,7 +492,7 @@ const retryFromDialog = async () => {
   }
 }
 
-onBeforeUnmount(() => disconnectKgSSE())
+onBeforeUnmount(() => disconnectAllKgSSE())
 
 // ==================== 详情 ====================
 const detailVisible = ref(false)

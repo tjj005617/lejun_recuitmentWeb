@@ -1,114 +1,132 @@
 <template>
   <div class="kg-page">
-    <!-- 顶部横幅 -->
-    <div class="kg-banner">
-      <div class="kg-banner__inner">
-        <h1 class="kg-banner__title">八股面试专栏</h1>
-        <p class="kg-banner__desc">基于知识图谱的技术面试准备，浏览知识点关联关系，系统化学习</p>
-        <!-- 搜索框 -->
-        <div class="kg-search">
+    <!-- 左侧侧边栏 -->
+    <aside class="kg-sidebar">
+      <div class="kg-sidebar__title">八股面试专栏</div>
+
+      <!-- 分类列表 -->
+      <div class="kg-sidebar__section">
+        <div
+          v-for="cat in categories"
+          :key="cat.id"
+          class="kg-sidebar__cat"
+          :class="{ active: activeCategoryId === cat.id }"
+          @click="selectCategory(cat.id)"
+        >
+          <span class="kg-sidebar__cat-name">{{ cat.name }}</span>
+          <span class="kg-sidebar__cat-count" v-if="cat.vertexCount">{{ cat.vertexCount }}</span>
+        </div>
+      </div>
+
+      <!-- 底部统计 -->
+      <div class="kg-sidebar__footer" v-if="graphData">
+        <span>{{ graphData.totalVertices }} 个知识点</span>
+        <span>{{ graphData.totalEdges }} 条关系</span>
+      </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="kg-content">
+      <!-- 顶部工具栏 -->
+      <div class="kg-content__header">
+        <div class="kg-content__header-left">
           <el-input
             v-model="searchKeyword"
             placeholder="搜索知识点..."
             clearable
             prefix-icon="Search"
-            style="width: 360px"
+            size="small"
+            style="width: 240px"
+            @input="onSearchInput"
             @keyup.enter="handleSearch"
             @clear="clearSearch"
           />
-        </div>
-      </div>
-    </div>
-
-    <!-- 分类标签 -->
-    <div class="kg-categories">
-      <div class="kg-categories__inner">
-        <div
-          v-for="cat in categories"
-          :key="cat.id"
-          class="kg-cat-tab"
-          :class="{ active: activeCategoryId === cat.id }"
-          @click="selectCategory(cat.id)"
-        >
-          <span class="kg-cat-tab__icon">{{ cat.icon || '📁' }}</span>
-          <span class="kg-cat-tab__name">{{ cat.name }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 主内容区 -->
-    <div class="kg-main" v-if="activeCategoryId">
-      <!-- 视图切换 + 统计 -->
-      <div class="kg-toolbar">
-        <div class="kg-toolbar__left">
           <el-button-group>
-            <el-button :type="viewMode === 'graph' ? 'primary' : ''" @click="viewMode = 'graph'">
-              <el-icon><Share /></el-icon> 图谱视图
+            <el-button :type="viewMode === 'graph' ? 'primary' : ''" @click="viewMode = 'graph'" size="small">
+              <el-icon><Share /></el-icon> 图谱
             </el-button>
-            <el-button :type="viewMode === 'list' ? 'primary' : ''" @click="viewMode = 'list'">
-              <el-icon><List /></el-icon> 列表视图
+            <el-button :type="viewMode === 'list' ? 'primary' : ''" @click="viewMode = 'list'" size="small">
+              <el-icon><List /></el-icon> 列表
             </el-button>
           </el-button-group>
-          <span class="kg-stats" v-if="graphData">
-            {{ graphData.totalVertices }} 个知识点 · {{ graphData.totalEdges }} 条关系
-          </span>
         </div>
-        <div class="kg-toolbar__right" v-if="viewMode === 'graph'">
+        <div class="kg-content__header-right" v-if="viewMode === 'graph'">
           <el-button-group>
             <el-button :type="interactionMode === 'pointer' ? 'primary' : ''"
               @click="interactionMode = 'pointer'; chartInstance?.setOption({ series: [{ roam: 'move' }] })"
-              title="指针模式 - 点击节点查看详情">
+              title="指针模式" size="small">
               <el-icon><Pointer /></el-icon>
             </el-button>
             <el-button :type="interactionMode === 'hand' ? 'primary' : ''"
               @click="interactionMode = 'hand'; chartInstance?.setOption({ series: [{ roam: true }] })"
-              title="手型模式 - 拖动画布平移">
+              title="手型模式" size="small">
               <el-icon><Position /></el-icon>
             </el-button>
           </el-button-group>
         </div>
       </div>
 
-      <!-- 图谱视图 -->
-      <div v-show="viewMode === 'graph'" class="kg-graph-container" :class="{ 'mode-hand': interactionMode === 'hand' }">
-        <div ref="graphChartRef" class="kg-graph-chart"></div>
-      </div>
-
-      <!-- 列表视图 -->
-      <div v-show="viewMode === 'list'" class="kg-list-container">
-        <div class="kg-vertex-grid">
-          <div
-            v-for="vertex in displayedVertices"
-            :key="vertex.id"
-            class="kg-vertex-card"
-            @click="openDetail(vertex)"
-          >
-            <div class="kg-vertex-card__header">
-              <span class="kg-vertex-card__type" :class="vertex.vertexType">{{ typeLabel(vertex.vertexType) }}</span>
-              <span class="kg-vertex-card__edges">{{ vertex.edgeCount || 0 }} 关联</span>
-            </div>
-            <h3 class="kg-vertex-card__name">{{ vertex.name }}</h3>
-            <p class="kg-vertex-card__desc">{{ vertex.description || '暂无描述' }}</p>
-            <div class="kg-vertex-card__footer" v-if="vertex.documentTitle">
-              <span class="kg-vertex-card__source">来源: {{ vertex.documentTitle }}</span>
+      <!-- 有分类选中时的内容 -->
+      <template v-if="activeCategoryId">
+        <!-- 实时搜索结果 -->
+        <div v-if="suggestions.length > 0" class="kg-suggestions-bar">
+          <div class="kg-suggestions-bar__header">
+            <span class="kg-suggestions-bar__title">搜索到 {{ suggestions.length }} 个相关知识点</span>
+            <el-button text type="primary" size="small" @click="clearSearch">清除</el-button>
+          </div>
+          <div class="kg-suggestions-list">
+            <div
+              v-for="item in suggestions"
+              :key="item.id"
+              class="kg-suggestion-item"
+              @click="onSuggestionClick(item)"
+            >
+              <span class="kg-suggestion-item__type" :class="item.vertexType">{{ typeLabel(item.vertexType) }}</span>
+              <div class="kg-suggestion-item__info">
+                <span class="kg-suggestion-item__name">{{ item.name }}</span>
+                <span class="kg-suggestion-item__desc">{{ item.description || '' }}</span>
+              </div>
             </div>
           </div>
         </div>
-        <div v-if="displayedVertices.length === 0" class="kg-empty">
-          <el-empty description="该分类暂无知识点" />
-        </div>
-      </div>
-    </div>
 
-    <!-- 搜索结果 -->
-    <div v-if="isSearching" class="kg-main">
-      <div class="kg-toolbar">
-        <div class="kg-toolbar__left">
-          <span class="kg-stats">搜索「{{ searchKeyword }}」找到 {{ searchResults.length }} 个知识点</span>
-          <el-button text @click="clearSearch">清除搜索</el-button>
+        <!-- 图谱视图 -->
+        <div v-show="viewMode === 'graph'" class="kg-graph-container" :class="{ 'mode-hand': interactionMode === 'hand' }">
+          <div ref="graphChartRef" class="kg-graph-chart"></div>
         </div>
-      </div>
-      <div class="kg-list-container">
+
+        <!-- 列表视图 -->
+        <div v-show="viewMode === 'list'" class="kg-list-container">
+          <div class="kg-vertex-grid">
+            <div
+              v-for="vertex in displayedVertices"
+              :key="vertex.id"
+              class="kg-vertex-card"
+              @click="openDetail(vertex)"
+            >
+              <div class="kg-vertex-card__header">
+                <span class="kg-vertex-card__type" :class="vertex.vertexType">{{ typeLabel(vertex.vertexType) }}</span>
+                <span class="kg-vertex-card__edges">{{ vertex.edgeCount || 0 }} 关联</span>
+              </div>
+              <h3 class="kg-vertex-card__name">{{ vertex.name }}</h3>
+              <p class="kg-vertex-card__desc">{{ vertex.description || '暂无描述' }}</p>
+              <div class="kg-vertex-card__footer" v-if="vertex.documentTitle">
+                <span class="kg-vertex-card__source">来源: {{ vertex.documentTitle }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="displayedVertices.length === 0" class="kg-empty">
+            <el-empty description="该分类暂无知识点" />
+          </div>
+        </div>
+      </template>
+
+      <!-- 搜索结果 -->
+      <div v-if="isSearching" class="kg-search-results">
+        <div class="kg-search-results__header">
+          <span class="kg-search-results__title">搜索「{{ searchKeyword }}」找到 {{ searchResults.length }} 个知识点</span>
+          <el-button text @click="clearSearch" size="small">清除搜索</el-button>
+        </div>
         <div class="kg-vertex-grid">
           <div
             v-for="vertex in searchResults"
@@ -125,7 +143,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </main>
 
     <!-- 知识点详情抽屉 -->
     <el-drawer v-model="detailVisible" :title="detailVertex?.name" size="480px" destroy-on-close>
@@ -206,6 +224,7 @@ const router = useRouter()
 // 分类数据
 const categories = ref([])
 const activeCategoryId = ref(null)
+const activeCategoryName = computed(() => categories.value.find(c => c.id === activeCategoryId.value)?.name || '')
 
 // 视图模式
 const viewMode = ref('graph')
@@ -220,6 +239,8 @@ const graphChartRef = ref(null)
 const searchKeyword = ref('')
 const isSearching = ref(false)
 const searchResults = ref([])
+const suggestions = ref([])
+let searchTimer = null
 
 // 详情抽屉
 const detailVisible = ref(false)
@@ -405,6 +426,27 @@ const clearSearch = () => {
   searchKeyword.value = ''
   isSearching.value = false
   searchResults.value = []
+  suggestions.value = []
+}
+
+// 输入时防抖获取建议
+const onSearchInput = () => {
+  clearTimeout(searchTimer)
+  const kw = searchKeyword.value.trim()
+  if (!kw) {
+    suggestions.value = []
+    return
+  }
+  searchTimer = setTimeout(async () => {
+    try {
+      const res = await searchKgVertices(kw, activeCategoryId.value)
+      suggestions.value = (res.data || []).slice(0, 20)
+    } catch { suggestions.value = [] }
+  }, 300)
+}
+
+const onSuggestionClick = (item) => {
+  openDetail(item)
 }
 
 // 打开详情
@@ -462,6 +504,7 @@ onBeforeUnmount(() => {
   if (container) {
     container.removeEventListener('wheel', preventBrowserZoom)
   }
+  clearTimeout(searchTimer)
   if (chartInstance.value) {
     chartInstance.value.dispose()
   }
@@ -470,211 +513,292 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .kg-page {
+  display: flex;
   min-height: calc(100vh - 64px);
-  background: #f8fafc;
+  background: #f5f5f5;
 }
 
-/* 顶部横幅 */
-.kg-banner {
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f4a35 100%);
-  padding: 48px 0 36px;
-}
-
-.kg-banner__inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-  text-align: center;
-}
-
-.kg-banner__title {
-  font-size: 32px;
-  font-weight: 800;
-  color: #fff;
-  margin: 0 0 8px;
-}
-
-.kg-banner__desc {
-  font-size: 15px;
-  color: rgba(255,255,255,0.6);
-  margin: 0 0 24px;
-}
-
-.kg-search {
-  display: flex;
-  justify-content: center;
-}
-
-.kg-search :deep(.el-input__wrapper) {
-  border-radius: 24px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-}
-
-/* 分类标签 */
-.kg-categories {
+/* ==================== 左侧侧边栏 ==================== */
+.kg-sidebar {
+  width: 220px;
+  min-width: 220px;
   background: #fff;
-  border-bottom: 1px solid #e2e8f0;
-  position: sticky;
-  top: 64px;
-  z-index: 40;
-}
-
-.kg-categories__inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
+  border-right: 1px solid #e5e7eb;
   display: flex;
-  gap: 4px;
-  overflow-x: auto;
+  flex-direction: column;
 }
 
-.kg-cat-tab {
+.kg-sidebar__title {
+  padding: 20px 16px 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.kg-sidebar__section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 8px;
+}
+
+.kg-sidebar__cat {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 12px 18px;
-  font-size: 14px;
-  color: #64748b;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  color: #555;
+  transition: all 0.15s;
+}
+
+.kg-sidebar__cat:hover {
+  background: #f3f4f6;
+  color: #1a1a1a;
+}
+
+.kg-sidebar__cat.active {
+  background: #eef2ff;
+  color: #4338ca;
+  font-weight: 500;
+}
+
+.kg-sidebar__cat-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  transition: all 0.2s;
 }
 
-.kg-cat-tab:hover {
-  color: #1e293b;
+.kg-sidebar__cat-count {
+  font-size: 12px;
+  color: #999;
 }
 
-.kg-cat-tab.active {
-  color: #10b981;
-  border-bottom-color: #10b981;
-  font-weight: 600;
+.kg-sidebar__footer {
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #999;
 }
 
-.kg-cat-tab__icon {
-  font-size: 16px;
+/* ==================== 主内容区 ==================== */
+.kg-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 主内容区 */
-.kg-main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px 24px;
+.kg-content__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-/* 工具栏 */
-.kg-toolbar {
+.kg-content__header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kg-content__header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ==================== 搜索结果 ==================== */
+.kg-search-results {
+  padding: 24px;
+}
+
+.kg-search-results__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
 }
 
-.kg-toolbar__left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.kg-search-results__title {
+  font-size: 14px;
+  color: #666;
 }
 
-.kg-toolbar__right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.kg-stats {
-  font-size: 13px;
-  color: #94a3b8;
-}
-
-/* 图谱容器 */
-.kg-graph-container {
+/* ==================== 搜索建议条 ==================== */
+.kg-suggestions-bar {
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 24px 0;
+}
+
+.kg-suggestions-bar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.kg-suggestions-bar__title {
+  font-size: 13px;
+  color: #666;
+}
+
+.kg-suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kg-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.kg-suggestion-item:hover {
+  background: #f3f4f6;
+}
+
+.kg-suggestion-item__type {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* 类型标签颜色 */
+.kg-suggestion-item__type.concept,
+.kg-vertex-card__type.concept,
+.kg-neighbor-item__type.concept { background: #eff6ff; color: #3b82f6; }
+
+.kg-suggestion-item__type.technology,
+.kg-vertex-card__type.technology,
+.kg-neighbor-item__type.technology { background: #ecfdf5; color: #10b981; }
+
+.kg-suggestion-item__type.api,
+.kg-vertex-card__type.api,
+.kg-neighbor-item__type.api { background: #fff7ed; color: #f59e0b; }
+
+.kg-suggestion-item__type.theory,
+.kg-vertex-card__type.theory,
+.kg-neighbor-item__type.theory { background: #faf5ff; color: #8b5cf6; }
+
+.kg-suggestion-item__type.example,
+.kg-vertex-card__type.example,
+.kg-neighbor-item__type.example { background: #fdf2f8; color: #ec4899; }
+
+.kg-suggestion-item__type.keyword,
+.kg-vertex-card__type.keyword,
+.kg-neighbor-item__type.keyword { background: #ecfeff; color: #06b6d4; }
+
+.kg-suggestion-item__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.kg-suggestion-item__name {
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.kg-suggestion-item__desc {
+  font-size: 12px;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==================== 图谱容器 ==================== */
+.kg-graph-container {
+  margin: 12px 24px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
   overflow: hidden;
   cursor: default;
 }
 
-.kg-graph-container.mode-hand {
-  cursor: grab;
-}
-
-.kg-graph-container.mode-hand:active {
-  cursor: grabbing;
-}
+.kg-graph-container.mode-hand { cursor: grab; }
+.kg-graph-container.mode-hand:active { cursor: grabbing; }
 
 .kg-graph-chart {
   width: 100%;
-  height: 600px;
+  height: calc(100vh - 180px);
+  min-height: 480px;
 }
 
-/* 列表视图 */
+/* ==================== 列表视图 ==================== */
 .kg-list-container {
-  min-height: 400px;
+  padding: 12px 24px 24px;
 }
 
 .kg-vertex-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
-/* 知识点卡片 */
 .kg-vertex-card {
   background: #fff;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
   cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid transparent;
+  transition: all 0.15s;
 }
 
 .kg-vertex-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  border-color: #e2e8f0;
-  transform: translateY(-2px);
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .kg-vertex-card__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .kg-vertex-card__type {
   display: inline-flex;
-  padding: 2px 10px;
-  border-radius: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
 }
 
-.kg-vertex-card__type.concept { background: #eff6ff; color: #3b82f6; }
-.kg-vertex-card__type.technology { background: #ecfdf5; color: #10b981; }
-.kg-vertex-card__type.api { background: #fff7ed; color: #f59e0b; }
-.kg-vertex-card__type.theory { background: #faf5ff; color: #8b5cf6; }
-.kg-vertex-card__type.example { background: #fdf2f8; color: #ec4899; }
-.kg-vertex-card__type.keyword { background: #ecfeff; color: #06b6d4; }
-
 .kg-vertex-card__edges {
   font-size: 12px;
-  color: #94a3b8;
+  color: #999;
 }
 
 .kg-vertex-card__name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  color: #0f172a;
-  margin: 0 0 6px;
+  color: #1a1a1a;
+  margin: 0 0 4px;
   line-height: 1.4;
 }
 
 .kg-vertex-card__desc {
   font-size: 13px;
-  color: #64748b;
+  color: #666;
   margin: 0;
   line-height: 1.5;
   display: -webkit-box;
@@ -685,21 +809,20 @@ onBeforeUnmount(() => {
 
 .kg-vertex-card__footer {
   margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #f1f5f9;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
 }
 
 .kg-vertex-card__source {
   font-size: 12px;
-  color: #94a3b8;
+  color: #999;
 }
 
-/* 空状态 */
 .kg-empty {
   padding: 60px 0;
 }
 
-/* 详情抽屉 */
+/* ==================== 详情抽屉 ==================== */
 .kg-detail {
   padding: 0 4px;
 }
@@ -711,7 +834,7 @@ onBeforeUnmount(() => {
 .kg-detail__section h4 {
   font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
+  color: #1a1a1a;
   margin: 0 0 12px;
 }
 
@@ -724,12 +847,12 @@ onBeforeUnmount(() => {
 
 .kg-detail__subtype {
   font-size: 12px;
-  color: #94a3b8;
+  color: #999;
 }
 
 .kg-detail__desc {
   font-size: 14px;
-  color: #475569;
+  color: #444;
   line-height: 1.6;
   margin: 0;
 }
@@ -743,7 +866,7 @@ onBeforeUnmount(() => {
 
 .kg-detail__category-label {
   font-size: 13px;
-  color: #64748b;
+  color: #666;
 }
 
 .kg-detail__props {
@@ -760,7 +883,7 @@ onBeforeUnmount(() => {
 
 .prop-label {
   font-size: 13px;
-  color: #64748b;
+  color: #666;
   min-width: 50px;
 }
 
@@ -770,55 +893,61 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
 }
 
-/* 邻居列表 */
 .kg-detail__neighbors {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .kg-neighbor-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.15s;
 }
 
 .kg-neighbor-item:hover {
-  background: #f1f5f9;
+  background: #f3f4f6;
 }
 
 .kg-neighbor-item__type {
   display: inline-flex;
-  padding: 1px 8px;
-  border-radius: 8px;
+  padding: 1px 6px;
+  border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
 }
 
-.kg-neighbor-item__type.concept { background: #eff6ff; color: #3b82f6; }
-.kg-neighbor-item__type.technology { background: #ecfdf5; color: #10b981; }
-.kg-neighbor-item__type.api { background: #fff7ed; color: #f59e0b; }
-.kg-neighbor-item__type.theory { background: #faf5ff; color: #8b5cf6; }
-.kg-neighbor-item__type.example { background: #fdf2f8; color: #ec4899; }
-.kg-neighbor-item__type.keyword { background: #ecfeff; color: #06b6d4; }
-
 .kg-neighbor-item__name {
   font-size: 13px;
-  color: #1e293b;
+  color: #1a1a1a;
 }
 
 .kg-detail__empty {
   font-size: 13px;
-  color: #94a3b8;
+  color: #999;
   padding: 12px 0;
 }
 
 .kg-detail__source {
   font-size: 13px;
-  color: #475569;
+  color: #444;
+}
+
+/* ==================== 滚动条 ==================== */
+.kg-sidebar__section::-webkit-scrollbar {
+  width: 4px;
+}
+
+.kg-sidebar__section::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.kg-sidebar__section::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 4px;
 }
 </style>

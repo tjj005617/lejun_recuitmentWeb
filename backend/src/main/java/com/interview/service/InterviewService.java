@@ -6,6 +6,7 @@ import com.interview.domain.po.InterviewQA;
 import com.interview.domain.po.Resume;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 面试业务服务接口
@@ -14,6 +15,8 @@ import java.util.List;
  */
 public interface InterviewService {
     Interview createInterview(Long userId, Long resumeId, String jobType);
+    /** 创建面试（支持三种模式） */
+    Interview createInterview(Long userId, Long resumeId, String jobType, String interviewMode, String categoryIds);
     Interview getInterviewById(Long id);
     List<Interview> getInterviewsByUserId(Long userId);
     List<InterviewQA> getQAHistory(Long interviewId);
@@ -24,6 +27,12 @@ public interface InterviewService {
     void saveReport(Long interviewId, String report);
     List<String> generateAllQuestions(Interview interview, Resume resume);
     List<String> generateAllQuestions(Interview interview, Resume resume, String conversationId);
+    /** 批量生成问题（支持分类上下文） */
+    List<String> generateAllQuestions(Interview interview, Resume resume, String conversationId, String interviewMode, List<String> categoryNames);
+    /** 生成选择题（20道四选一） */
+    List<String> generateChoiceQuestions(Interview interview, Resume resume, String conversationId, String interviewMode, List<String> categoryNames);
+    /** 提交选择题答案并判分 */
+    Map<String, Object> submitChoiceAnswers(Long interviewId, Map<String, String> answers);
 
     // 报告生成
     String generateReportForInterview(Resume resume, List<InterviewQA> qaList, String jobType);

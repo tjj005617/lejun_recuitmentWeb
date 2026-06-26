@@ -23,6 +23,9 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -100,6 +103,66 @@ public class KgDocumentServiceImpl implements KgDocumentService {
         return doc;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<KgDocument> batchUploadDocuments(MultipartFile[] files, String categoryName) {
+        List<KgDocument> docs = new ArrayList<>();
+        // 根据分类名称查找或新建分类（所有文件共用）
+        Long categoryId = null;
+        if (categoryName != null && !categoryName.isBlank()) {
+            KgCategory matched = findOrCreateCategory(categoryName.trim());
+            categoryId = matched.getId();
+        }
+
+        for (MultipartFile file : files) {
+            try {
+                // 读取文件内容
+                String content = new String(file.getBytes(), StandardCharsets.UTF_8);
+
+                // 上传到 MinIO
+                String objectName;
+                if (categoryId != null) {
+                    KgCategory category = categoryMapper.selectById(categoryId);
+                    objectName = minioUtil.upload(file, category.getBucket());
+                } else {
+                    objectName = minioUtil.upload(file);
+                }
+
+                // 保存文档记录
+                KgDocument doc = new KgDocument();
+                doc.setUuid(UUID.randomUUID().toString());
+                doc.setTitle(file.getOriginalFilename());
+                doc.setFileName(file.getOriginalFilename());
+                doc.setObjectName(objectName);
+                doc.setCategoryId(categoryId);
+                doc.setRawContent(content);
+                doc.setParseStatus("pending");
+                doc.setVertexCount(0);
+                doc.setEdgeCount(0);
+                documentMapper.insert(doc);
+
+                log.info("批量上传文档: id={}, title={}", doc.getId(), doc.getTitle());
+                docs.add(doc);
+
+                // 异步处理
+                Long docId = doc.getId();
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        processingService.processDocument(docId);
+                    }
+                });
+            } catch (IOException e) {
+                log.error("批量上传文件失败: {}", file.getOriginalFilename(), e);
+                throw new RuntimeException("文件上传失败: " + file.getOriginalFilename(), e);
+            }
+        }
+
+        log.info("批量上传完成，共{}个文件，分类={}", docs.size(),
+                categoryName != null ? categoryName : "AI自动分类");
+        return docs;
+    }
+
     /**
      * 根据分类名称查找已有分类，不存在则新建
      */
@@ -123,7 +186,7 @@ public class KgDocumentServiceImpl implements KgDocumentService {
     }
 
     @Override
-    public List<KgDocumentVO> listByCategory(Long categoryId, int page, int size) {
+    public Map<String, Object> listByCategory(Long categoryId, int page, int size) {
         Page<KgDocument> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<KgDocument> wrapper = new LambdaQueryWrapper<KgDocument>()
                 .eq(KgDocument::getDeleted, 0);
@@ -148,7 +211,7 @@ public class KgDocumentServiceImpl implements KgDocumentService {
         }
 
         Map<Long, KgCategory> categoryMap = finalCategoryMap;
-        return result.getRecords().stream().map(doc -> {
+        List<KgDocumentVO> voList = result.getRecords().stream().map(doc -> {
             KgDocumentVO vo = new KgDocumentVO();
             BeanUtil.copyProperties(doc, vo);
             KgCategory cat = categoryMap.get(doc.getCategoryId());
@@ -157,6 +220,44 @@ public class KgDocumentServiceImpl implements KgDocumentService {
             }
             return vo;
         }).collect(Collectors.toList());
+
+        // 返回分页数据：记录列表 + 总条数 + 统计数据
+        Map<String, Object> data = new HashMap<>();
+        data.put("records", voList);
+        data.put("total", result.getTotal());
+
+        // 统计数据（全量，不受分页影响）
+        LambdaQueryWrapper<KgDocument> statsWrapper = new LambdaQueryWrapper<KgDocument>()
+                .eq(KgDocument::getDeleted, 0);
+        if (categoryId != null) {
+            statsWrapper.eq(KgDocument::getCategoryId, categoryId);
+        }
+        // 处理完成数
+        long completedCount = documentMapper.selectCount(
+                statsWrapper.eq(KgDocument::getParseStatus, "completed"));
+        // 处理失败数
+        long failedCount = documentMapper.selectCount(
+                statsWrapper.eq(KgDocument::getParseStatus, "failed"));
+        // 知识点总数
+        List<KgDocument> allDocs = documentMapper.selectList(
+                new LambdaQueryWrapper<KgDocument>()
+                        .eq(KgDocument::getDeleted, 0)
+                        .select(KgDocument::getVertexCount));
+        if (categoryId != null) {
+            allDocs = documentMapper.selectList(
+                    new LambdaQueryWrapper<KgDocument>()
+                            .eq(KgDocument::getDeleted, 0)
+                            .eq(KgDocument::getCategoryId, categoryId)
+                            .select(KgDocument::getVertexCount));
+        }
+        long totalVertices = allDocs.stream()
+                .mapToLong(d -> d.getVertexCount() != null ? d.getVertexCount() : 0)
+                .sum();
+
+        data.put("completedCount", completedCount);
+        data.put("failedCount", failedCount);
+        data.put("totalVertices", totalVertices);
+        return data;
     }
 
     @Override

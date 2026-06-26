@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<?> handleRuntimeException(RuntimeException e) {
-        log.error("业务异常: {}", e.getMessage());
+        log.error("业务异常: {}", e.getMessage(), e);
         return Result.fail(e.getMessage());
     }
 

@@ -36,6 +36,21 @@ public class AdminKgController {
     }
 
     /**
+     * 批量上传文档（可选指定分类名称，不填则 AI 自动分类）
+     */
+    @PostMapping("/batch-upload")
+    public Result<?> batchUpload(
+            @RequestParam("files") MultipartFile[] files,
+            @RequestParam(required = false) String categoryName) {
+        try {
+            var docs = documentService.batchUploadDocuments(files, categoryName);
+            return Result.ok(docs);
+        } catch (Exception e) {
+            return Result.fail("批量上传失败: " + e.getMessage());
+        }
+    }
+
+    /**
      * 获取所有分类（包括禁用的）
      */
     @GetMapping("/categories")
