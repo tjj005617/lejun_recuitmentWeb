@@ -1,6 +1,6 @@
 # 乐俊招聘平台
 
-基于 AI 大模型的智能招聘面试系统，支持文字/沉浸式两种面试模式，集成语音识别（STT）、语音合成（TTS）、视频通话等能力，为企业招聘和个人求职提供智能化面试解决方案。
+基于 AI 大模型的智能招聘面试系统，支持文字/沉浸式/八股选择题三种面试模式，集成语音识别（STT）、语音合成（TTS）、视频通话、简历智能匹配等能力，为企业招聘和个人求职提供智能化面试解决方案。
 
 ## 技术栈
 
@@ -17,6 +17,7 @@
 | RabbitMQ | 3.13 | 消息队列 |
 | MinIO | Latest | 文件存储（简历等） |
 | MySQL | 8.0.36 | 主数据库 |
+| Milvus | 2.4 | 向量数据库（简历-岗位匹配） |
 | Java | 17 | 运行环境 |
 
 ### 前端
@@ -60,19 +61,20 @@ ai-interview/
 │       ├── router/             # 路由配置
 │       └── assets/             # 静态资源
 ├── docs/                       # 设计文档
-├── docker/                     # Docker 配置文件
 ├── docker-compose.yml          # 容器编排
-└── prompts/                    # AI 提示词模板
+└── .env.example                # 环境变量模板
 ```
 
 ## 核心功能
 
 ### 求职者端
 - **智能搜索**：基于 Elasticsearch 的职位/公司全文搜索，支持多条件筛选
-- **文字模拟面试**：AI 根据简历和岗位 JD 自动生成面试题，实时对话评分
-- **沉浸式模拟面试**：语音识别 + 语音合成 + 可视化 AI 面试官，模拟真实面试场景
-- **视频通话面试**：基于 WebRTC（PeerJS）的实时视频面试
+- **AI 文字面试**：AI 根据简历和岗位 JD 自动生成面试题，实时对话评分
+- **AI 沉浸式面试**：语音识别 + 语音合成 + 可视化 AI 面试官，模拟真实面试场景
+- **八股选择题面试**：批量生成技术选择题，自动评分
 - **简历管理**：上传简历至 MinIO，AI 解析提取关键信息
+- **简历智能匹配**：基于 Milvus 向量相似度的简历-岗位推荐
+- **视频通话面试**：基于 WebRTC（PeerJS）的实时视频面试
 - **消息中心**：与 HR 实时聊天，WebSocket 消息推送 + SSE 通知
 
 ### HR 端
@@ -88,6 +90,7 @@ ai-interview/
 - **职位分类管理**：树形职位分类体系
 - **地区管理**：省市区三级联动数据
 - **批量导入导出**：支持 Excel 批量导入导出
+- **知识图谱管理**：AI 文档处理与知识抽取
 
 ## 快速开始
 
@@ -115,13 +118,23 @@ docker compose up -d
 | Elasticsearch | 9200 | - |
 | MinIO | 9000 / 9001 | minioadmin / minioadmin123 |
 
-### 2. 启动后端
+### 2. 配置环境变量
+
+复制 `.env.example` 为 `.env` 并填入实际值：
+
+```bash
+cp .env.example .env
+```
+
+主要配置项：
+- `AI_API_KEY` - MiMo API 密钥
+- `DEEPSEEK_API_KEY` - DeepSeek API 密钥
+- `JWT_SECRET` - JWT 签名密钥
+
+### 3. 启动后端
 
 ```bash
 cd backend
-
-# 修改数据库连接地址（如指向本地 Docker 启动的 MySQL）
-# 编辑 src/main/resources/application.yml
 
 # 编译启动
 mvn spring-boot:run
@@ -129,7 +142,7 @@ mvn spring-boot:run
 
 后端启动后监听 `http://localhost:8080`。
 
-### 3. 启动前端
+### 4. 启动前端
 
 ```bash
 cd frontend
@@ -141,14 +154,24 @@ npm install
 npm run dev
 ```
 
-前端启动后监听 `https://localhost:5173`（自签名证书，移动端语音功能需要 HTTPS）。
+前端启动后监听 `http://localhost:5173`。
 
-### 4. 初始化数据
+### 5. Docker 部署（生产环境）
 
 ```bash
-# 初始化福利标签数据
-mysql -u root -proot123 ai_interview < docker/mysql/init/benefit_tag_data.sql
+# 打包后端
+cd backend
+mvn clean package -DskipTests
+
+# 打包前端
+cd frontend
+npm run build
+
+# 构建并启动所有服务
+docker compose up -d --build
 ```
+
+访问 http://localhost 即可
 
 ## 默认账号
 
@@ -164,15 +187,34 @@ mysql -u root -proot123 ai_interview < docker/mysql/init/benefit_tag_data.sql
 
 系统支持接入多个 AI 大模型，通过 Spring AI OpenAI SDK 兼容接口对接：
 
-- **MiMo**（默认主模型）：用于面试对话、简历解析
-- **DeepSeek**（备选模型）：作为备选 AI 驱动
+- **MiMo**（默认主模型）：用于面试对话、问题生成、简历解析
+- **DeepSeek**：用于答案评分
+- **DashScope Embedding**：用于简历-岗位向量匹配
 
-配置项位于 `application.yml` 的 `ai` 和 `deepseek` 节点。
+配置项位于 `application.yml` 或通过环境变量注入。
+
+## 环境变量说明
+
+| 变量名 | 说明 | 默认值 |
+|--------|------|--------|
+| `MYSQL_USERNAME` | MySQL 用户名 | root |
+| `MYSQL_PASSWORD` | MySQL 密码 | root123 |
+| `REDIS_PASSWORD` | Redis 密码 | redis123 |
+| `MONGO_USERNAME` | MongoDB 用户名 | admin |
+| `MONGO_PASSWORD` | MongoDB 密码 | admin123 |
+| `AI_API_KEY` | MiMo API 密钥 | - |
+| `DEEPSEEK_API_KEY` | DeepSeek API 密钥 | - |
+| `DASHSCOPE_API_KEY` | DashScope Embedding 密钥 | - |
+| `JWT_SECRET` | JWT 签名密钥 | - |
+| `MINIO_ACCESS_KEY` | MinIO 访问密钥 | minioadmin |
+| `MINIO_SECRET_KEY` | MinIO 秘密密钥 | minioadmin123 |
 
 ## 文档
 
 项目设计文档位于 `docs/` 目录：
 
+- `八股栏目与混合模式设计文档.md` — 八股选择题模块
+- `岗位匹配模块设计文档.md` — Milvus 向量匹配模块
 - `需求分析与功能设计.md` — 整体需求与功能规划
 - `admin-backend-design.md` — 管理后台设计文档
 - `AI文字模拟面试-完整设计与实现.md` — 文字面试模块

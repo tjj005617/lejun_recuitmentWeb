@@ -75,6 +75,7 @@
   - [3. 获取面试历史](#3-获取面试历史)
   - [4. 获取用户面试列表](#4-获取用户面试列表)
   - [5. 语义判断回答是否结束](#5-语义判断回答是否结束)
+  - [6. 提交选择题答案](#6-提交选择题答案)
 - [十一、AI 语音模块](#十一ai-语音模块)
   - [1. 问题语音朗读（TTS）](#1-问题语音朗读tts)
   - [2. 语音识别（STT）](#2-语音识别stt)
@@ -125,6 +126,11 @@
   - [12. 重试处理失败文档](#12-重试处理失败文档)
   - [13. 删除文档](#13-删除文档)
   - [14. 订阅文档处理进度（SSE）](#14-订阅文档处理进度sse)
+- [二十一、岗位匹配模块](#二十一岗位匹配模块)
+  - [1. 根据简历匹配岗位](#1-根据简历匹配岗位)
+  - [2. 同步单个岗位到 Milvus](#2-同步单个岗位到-milvus)
+  - [3. 全量同步岗位到 Milvus](#3-全量同步岗位到-milvus)
+  - [4. 从 Milvus 删除岗位向量](#4-从-milvus-删除岗位向量)
 
 ---
 
@@ -194,6 +200,10 @@
 - `GET /api/kg/graph/neighbor/{vertexId}` - 获取一跳邻居
 - `GET /api/kg/graph/search` - 搜索知识点
 - `GET /api/kg/graph/stats/{categoryId}` - 获取分类统计
+- `POST /api/job-match/resume/{resumeId}` - 简历岗位匹配
+- `POST /api/job-match/sync/{jobId}` - 同步岗位到Milvus
+- `POST /api/job-match/sync-all` - 全量同步岗位
+- `POST /api/job-match/delete/{jobId}` - 删除岗位向量
 
 ### 管理后台接口权限
 
@@ -2130,17 +2140,28 @@
 {
   "userId": 1,
   "resumeId": 1,
-  "jobType": "后端开发"
+  "jobType": "后端开发",
+  "interviewMode": "resume",
+  "questionType": "essay",
+  "baguCategories": ["Java基础", "Spring框架"]
 }
 ```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | userId | Long | 是 | 用户ID |
-| resumeId | Long | 是 | 简历ID |
+| resumeId | Long | 否 | 简历ID（topic模式可为null） |
 | jobType | String | 是 | 岗位类型（如：前端工程师、后端工程师、全栈工程师） |
+| interviewMode | String | 否 | 面试模式：`resume`(简历分析，默认)、`topic`(八股栏目)、`hybrid`(混合) |
+| questionType | String | 否 | 题型：`essay`(问答题，默认)、`choice`(选择题) |
+| baguCategories | List<String> | 否 | 八股分类名称列表（topic/hybrid模式下使用） |
 
-**说明:** 创建面试时会自动生成10轮面试问题并存库。
+**说明:**
+- 创建面试时会根据题型自动生成面试问题并存库
+- `resume`模式：基于简历内容生成问题，需提供resumeId
+- `topic`模式：基于八股分类生成问题，可不提供resumeId
+- `hybrid`模式：简历+八股混合生成问题
+- `choice`题型：批量生成选择题，自动判分
 
 **成功响应:**
 
@@ -2152,6 +2173,8 @@
     "userId": 1,
     "resumeId": 1,
     "jobType": "后端开发",
+    "interviewMode": "resume",
+    "questionType": "essay",
     "totalRounds": 10,
     "currentRound": 0,
     "status": "PENDING",
@@ -2291,6 +2314,75 @@
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | complete | Boolean | true=回答已结束，false=回答未结束 |
+
+---
+
+### 6. 提交选择题答案
+
+- **URL**: `POST /api/interview/{id}/submit-choice`
+- **Content-Type**: `application/json`
+
+**路径参数:**
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| id | Long | 面试ID |
+
+**请求参数:**
+
+```json
+{
+  "answers": {
+    "1": "A",
+    "2": "B",
+    "3": "C",
+    "4": "A",
+    "5": "D"
+  }
+}
+```
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| answers | Map<String, String> | 是 | 题号->选项的映射（如 {"1": "A", "2": "B"}） |
+
+**说明:** 提交选择题答案并自动判分。系统会根据预设的正确答案进行评分，并更新面试总分和状态。
+
+**成功响应:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "interviewId": 1,
+    "totalScore": 80.0,
+    "correctCount": 8,
+    "totalCount": 10,
+    "details": [
+      {
+        "questionIndex": 1,
+        "yourAnswer": "A",
+        "correctAnswer": "A",
+        "correct": true
+      },
+      {
+        "questionIndex": 2,
+        "yourAnswer": "B",
+        "correctAnswer": "C",
+        "correct": false
+      }
+    ]
+  }
+}
+```
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| interviewId | Long | 面试ID |
+| totalScore | Double | 总分（百分制） |
+| correctCount | Integer | 答对题数 |
+| totalCount | Integer | 总题数 |
+| details | List | 每题的判分详情 |
 
 ---
 
@@ -4779,8 +4871,11 @@ kg_progress: {"step":"","status":"failed","progress":0,"errorMessage":"AI 提取
 |---|---|---|
 | id | Long | 主键ID |
 | userId | Long | 用户ID |
-| resumeId | Long | 关联简历ID |
+| resumeId | Long | 关联简历ID（topic模式可为null） |
 | jobType | String | 岗位类型 |
+| interviewMode | String | 面试模式：resume/topic/hybrid |
+| questionType | String | 题型：essay(问答题)/choice(选择题) |
+| baguCategories | String | 八股分类名称（JSON数组） |
 | totalRounds | Integer | 总面试轮数 |
 | currentRound | Integer | 当前轮数 |
 | status | String | 状态：PENDING/IN_PROGRESS/COMPLETED |
@@ -4946,6 +5041,21 @@ kg_progress: {"step":"","status":"failed","progress":0,"errorMessage":"AI 提取
 
 ---
 
+### JobMatchResult（岗位匹配结果）
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| jobId | Long | 岗位ID |
+| title | String | 岗位名称 |
+| companyName | String | 公司名称 |
+| city | String | 城市 |
+| salaryRange | String | 薪资范围 |
+| categoryName | String | 职位分类 |
+| matchScore | Double | 匹配度（0-100） |
+| highlights | List<String> | 匹配亮点关键词 |
+
+---
+
 ## 十八、状态码说明
 
 | HTTP状态码 | 说明 |
@@ -5083,3 +5193,138 @@ HR(发起方)              ChatWebSocket              求职者(接收方)
 - 接收方用 `MediaSource` + `SourceBuffer` 重建媒体流播放
 - 降级参数：320x240 / 15fps / 200kbps / opus 32kbps
 - 连接建立后前端显示提示 "P2P 连接失败，已切换到中继模式"
+
+---
+
+## 二十一、岗位匹配模块
+
+基于 Milvus 向量数据库的简历-岗位智能匹配，通过 AI 生成简历/岗位摘要 → Embedding 转向量 → ANN 搜索实现精准匹配。
+
+### 1. 根据简历匹配岗位
+
+- **URL**: `POST /api/job-match/resume/{resumeId}`
+- **路径参数:**
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| resumeId | Long | 简历ID |
+
+**查询参数:**
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+|---|---|---|---|---|
+| topN | Integer | 否 | 10 | 返回匹配岗位数量 |
+| city | String | 否 | - | 城市过滤（如：北京、上海） |
+| categoryId | String | 否 | - | 职位分类ID过滤 |
+
+**说明:** 根据简历内容智能匹配最合适的岗位。系统会：
+1. AI 分析简历生成结构化摘要
+2. DashScope Embedding 转为 1024 维向量
+3. Milvus ANN 搜索最相似的岗位向量
+4. MySQL 补全岗位详情（公司名、分类、福利等）
+5. 返回匹配度百分比
+
+**成功响应:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "matches": [
+      {
+        "jobId": 1,
+        "title": "Java高级工程师",
+        "companyName": "阿里巴巴",
+        "city": "杭州",
+        "salaryRange": "30-50K",
+        "categoryName": "后端开发",
+        "matchScore": 92.5,
+        "highlights": ["5年Java经验", "Spring Boot精通", "微服务架构"]
+      },
+      {
+        "jobId": 2,
+        "title": "全栈工程师",
+        "companyName": "字节跳动",
+        "city": "北京",
+        "salaryRange": "25-45K",
+        "categoryName": "全栈开发",
+        "matchScore": 85.3,
+        "highlights": ["Vue前端经验", "Node.js能力"]
+      }
+    ],
+    "total": 2
+  }
+}
+```
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| jobId | Long | 岗位ID |
+| title | String | 岗位名称 |
+| companyName | String | 公司名称 |
+| city | String | 城市 |
+| salaryRange | String | 薪资范围 |
+| categoryName | String | 职位分类 |
+| matchScore | Double | 匹配度（0-100） |
+| highlights | List<String> | 匹配亮点关键词 |
+
+---
+
+### 2. 同步单个岗位到 Milvus
+
+- **URL**: `POST /api/job-match/sync/{jobId}`
+- **路径参数:**
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| jobId | Long | 岗位ID |
+
+**说明:** 将指定岗位的向量同步到 Milvus。当岗位新建、编辑时自动调用，也可手动触发。
+
+**成功响应:**
+
+```json
+{
+  "success": true,
+  "data": "同步成功"
+}
+```
+
+---
+
+### 3. 全量同步岗位到 Milvus
+
+- **URL**: `POST /api/job-match/sync-all`
+
+**说明:** 异步全量同步所有 `status=active` 的岗位到 Milvus。适用于首次部署或数据修复场景。同步过程在后台执行，通过日志查看进度。
+
+**成功响应:**
+
+```json
+{
+  "success": true,
+  "data": "全量同步已启动，请查看日志"
+}
+```
+
+---
+
+### 4. 从 Milvus 删除岗位向量
+
+- **URL**: `POST /api/job-match/delete/{jobId}`
+- **路径参数:**
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| jobId | Long | 岗位ID |
+
+**说明:** 从 Milvus 中删除指定岗位的向量。当岗位下架、删除时自动调用。
+
+**成功响应:**
+
+```json
+{
+  "success": true,
+  "data": "删除成功"
+}
+```
