@@ -3,6 +3,7 @@ package com.interview.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.interview.config.MilvusConfig;
+import com.interview.domain.dto.MilvusSearchResult;
 import com.interview.service.MilvusService;
 import io.milvus.v2.client.MilvusClientV2;
 import io.milvus.v2.common.IndexParam;
@@ -263,5 +264,55 @@ public class MilvusServiceImpl implements MilvusService {
 
         log.debug("向量搜索完成: 返回 {} 条结果", jobIds.size());
         return jobIds;
+    }
+
+    @Override
+    public List<MilvusSearchResult> searchSimilarJobsWithScore(List<Float> queryVector, Map<String, String> filters, int topK) {
+        checkClient();
+        String collectionName = milvusConfig.getCollection();
+
+        // 构建过滤表达式
+        List<String> conditions = new ArrayList<>();
+        conditions.add("status == \"active\"");
+
+        if (filters != null) {
+            if (filters.containsKey("city") && !filters.get("city").isEmpty()) {
+                conditions.add("city == \"" + filters.get("city") + "\"");
+            }
+            if (filters.containsKey("categoryId") && !filters.get("categoryId").isEmpty()) {
+                conditions.add("category_id == " + filters.get("categoryId"));
+            }
+        }
+
+        String filterExpr = String.join(" && ", conditions);
+
+        // 执行向量搜索
+        SearchResp searchResp = client.search(SearchReq.builder()
+                .collectionName(collectionName)
+                .data(List.of(new FloatVec(queryVector)))
+                .annsField("vector")
+                .metricType(IndexParam.MetricType.COSINE)
+                .topK(topK)
+                .filter(filterExpr)
+                .outputFields(List.of("job_id"))
+                .build());
+
+        // 提取结果中的 job_id 和 score
+        List<MilvusSearchResult> results = new ArrayList<>();
+        if (searchResp.getSearchResults() != null) {
+            for (List<SearchResp.SearchResult> searchResults : searchResp.getSearchResults()) {
+                for (SearchResp.SearchResult result : searchResults) {
+                    Object jobIdObj = result.getEntity().get("job_id");
+                    if (jobIdObj != null) {
+                        Long jobId = ((Number) jobIdObj).longValue();
+                        Float score = result.getScore();
+                        results.add(new MilvusSearchResult(jobId, score));
+                    }
+                }
+            }
+        }
+
+        log.debug("向量搜索完成: 返回 {} 条结果", results.size());
+        return results;
     }
 }

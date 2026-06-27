@@ -7,9 +7,9 @@ spring:
     deserialization:
       fail-on-unknown-properties: false
 
-  # MySQL 配置（容器名 mysql，网络 junle）
+  # MySQL 配置
   datasource:
-    url: jdbc:mysql://mysql:3306/ai_interview?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8
+    url: jdbc:mysql://192.168.150.105:3306/ai_interview?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8
     username: ${MYSQL_USERNAME:root}
     password: ${MYSQL_PASSWORD:root123}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -17,16 +17,16 @@ spring:
   # Redis + MongoDB 配置
   data:
     redis:
-      host: redis
+      host: 192.168.150.105
       port: 6379
       password: ${REDIS_PASSWORD:redis123}
       database: 0
     mongodb:
-      uri: mongodb://${MONGO_USERNAME:admin}:${MONGO_PASSWORD:admin123}@mongodb:27017/junle_chat?authSource=admin
+      uri: mongodb://${MONGO_USERNAME:admin}:${MONGO_PASSWORD:admin123}@192.168.150.105:27017/junle_chat?authSource=admin
 
   # RabbitMQ 配置
   rabbitmq:
-    host: rabbitmq
+    host: 192.168.150.105
     port: 5672
     username: guest
     password: guest
@@ -39,7 +39,7 @@ spring:
 
   # ElasticSearch 配置
   elasticsearch:
-    uris: http://elasticsearch:9200
+    uris: http://192.168.150.105:9200
 
   sql:
     init:
@@ -66,44 +66,44 @@ mybatis-plus:
 # Redisson 配置
 redisson:
   single-server-config:
-    address: redis://redis:6379
+    address: redis://192.168.150.105:6379
     password: ${REDIS_PASSWORD:redis123}
     database: 0
 
 # AI配置 (Spring AI OpenAI SDK 默认拼接 /v1/chat/completions，baseUrl 不要带 /v1)
 ai:
-  api-key: ${AI_API_KEY:your-api-key}
+  api-key: ${AI_API_KEY:}
   api-url: https://api.xiaomimimo.com
   model: mimo-v2.5-pro
   timeout: 120
 
 # DeepSeek 配置 (Spring AI OpenAI SDK 自动拼接 /v1/chat/completions，baseUrl 不要带 /v1)
 deepseek:
-  api-key: ${DEEPSEEK_API_KEY:your-api-key}
+  api-key: ${DEEPSEEK_API_KEY:}
   api-url: https://api.deepseek.com
   model: deepseek-v4-flash
   timeout: 120
 
 # Milvus 向量数据库配置
 milvus:
-  uri: http://milvus:19530
+  uri: http://192.168.150.105:19530
   collection: job_vectors
   dimension: 1024
 
 # DashScope Embedding 配置（阿里云通义 text-embedding-v3）
 dashscope:
-  api-key: ${DASHSCOPE_API_KEY:your-api-key}
+  api-key: ${DASHSCOPE_API_KEY:}
   model: text-embedding-v3
   dimension: 1024
 
 # JWT 配置
 jwt:
-  secret: ${JWT_SECRET:your-jwt-secret-key-must-be-at-least-256-bits-long}
+  secret: ${JWT_SECRET:}
   expiration: 604800000  # 7天（毫秒）
 
 # MinIO 配置
 minio:
-  endpoint: http://minio:9000
+  endpoint: http://192.168.150.105:9000
   access-key: ${MINIO_ACCESS_KEY:minioadmin}
   secret-key: ${MINIO_SECRET_KEY:minioadmin123}
   bucket: resumes

@@ -5048,11 +5048,15 @@ kg_progress: {"step":"","status":"failed","progress":0,"errorMessage":"AI 提取
 | jobId | Long | 岗位ID |
 | title | String | 岗位名称 |
 | companyName | String | 公司名称 |
+| companyLogo | String | 公司Logo |
 | city | String | 城市 |
-| salaryRange | String | 薪资范围 |
+| salaryMin | Integer | 最低薪资 |
+| salaryMax | Integer | 最高薪资 |
+| experience | String | 经验要求 |
+| education | String | 学历要求 |
 | categoryName | String | 职位分类 |
-| matchScore | Double | 匹配度（0-100） |
-| highlights | List<String> | 匹配亮点关键词 |
+| matchScore | Integer | 匹配度（0-100） |
+| description | String | 岗位描述（截取前200字） |
 
 ---
 
@@ -5235,24 +5239,18 @@ HR(发起方)              ChatWebSocket              求职者(接收方)
         "jobId": 1,
         "title": "Java高级工程师",
         "companyName": "阿里巴巴",
+        "companyLogo": "https://...",
         "city": "杭州",
-        "salaryRange": "30-50K",
+        "salaryMin": 30000,
+        "salaryMax": 50000,
+        "experience": "3-5年",
+        "education": "本科",
         "categoryName": "后端开发",
-        "matchScore": 92.5,
-        "highlights": ["5年Java经验", "Spring Boot精通", "微服务架构"]
-      },
-      {
-        "jobId": 2,
-        "title": "全栈工程师",
-        "companyName": "字节跳动",
-        "city": "北京",
-        "salaryRange": "25-45K",
-        "categoryName": "全栈开发",
-        "matchScore": 85.3,
-        "highlights": ["Vue前端经验", "Node.js能力"]
+        "matchScore": 87,
+        "description": "负责核心系统开发..."
       }
     ],
-    "total": 2
+    "total": 1
   }
 }
 ```
@@ -5262,11 +5260,15 @@ HR(发起方)              ChatWebSocket              求职者(接收方)
 | jobId | Long | 岗位ID |
 | title | String | 岗位名称 |
 | companyName | String | 公司名称 |
+| companyLogo | String | 公司Logo |
 | city | String | 城市 |
-| salaryRange | String | 薪资范围 |
+| salaryMin | Integer | 最低薪资 |
+| salaryMax | Integer | 最高薪资 |
+| experience | String | 经验要求 |
+| education | String | 学历要求 |
 | categoryName | String | 职位分类 |
-| matchScore | Double | 匹配度（0-100） |
-| highlights | List<String> | 匹配亮点关键词 |
+| matchScore | Integer | 匹配度（0-100） |
+| description | String | 岗位描述（截取前200字） |
 
 ---
 

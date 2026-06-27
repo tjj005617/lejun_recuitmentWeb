@@ -1,5 +1,7 @@
 package com.interview.service;
 
+import com.interview.domain.dto.MilvusSearchResult;
+
 import java.util.List;
 import java.util.Map;
 
@@ -40,4 +42,13 @@ public interface MilvusService {
      * @return 匹配的岗位 ID 列表（按相似度降序）
      */
     List<Long> searchSimilarJobs(List<Float> queryVector, Map<String, String> filters, int topK);
+
+    /**
+     * 向量相似度搜索（返回分数）
+     * @param queryVector 查询向量
+     * @param filters 可选的标量过滤条件（如 city、categoryId）
+     * @param topK 返回数量
+     * @return 匹配结果列表（含 jobId 和相似度分数）
+     */
+    List<MilvusSearchResult> searchSimilarJobsWithScore(List<Float> queryVector, Map<String, String> filters, int topK);
 }

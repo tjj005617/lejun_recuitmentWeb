@@ -18,6 +18,10 @@ backend/target/
 frontend/dist/
 frontend/node_modules/
 
+# Logs
+logs/
+backend/logs/
+
 # IDE
 .idea/
 .vscode/
@@ -41,3 +45,6 @@ frontend/.env.local
 
 # Docker compose override
 docker-compose.override.yml
+
+# Claude Code
+skills-lock.json

@@ -1,6 +1,7 @@
 package com.interview.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.interview.domain.dto.MilvusSearchResult;
 import com.interview.domain.po.Company;
 import com.interview.domain.po.Job;
 import com.interview.domain.po.Resume;
@@ -65,16 +66,16 @@ public class JobMatchServiceImpl implements JobMatchService {
         // 3. Embedding 转向量
         List<Float> queryVector = embeddingService.embed(resumeSummary);
 
-        // 4. Milvus 向量搜索
-        List<Long> matchedJobIds = milvusService.searchSimilarJobs(queryVector, filters, topN);
+        // 4. Milvus 向量搜索（带分数）
+        List<MilvusSearchResult> searchResults = milvusService.searchSimilarJobsWithScore(queryVector, filters, topN);
 
-        if (matchedJobIds.isEmpty()) {
+        if (searchResults.isEmpty()) {
             log.info("未找到匹配的岗位");
             return List.of();
         }
 
-        // 5. MySQL 补全岗位详情
-        return buildMatchResults(matchedJobIds);
+        // 5. MySQL 补全岗位详情（含匹配度分数）
+        return buildMatchResults(searchResults);
     }
 
     @Override
@@ -143,9 +144,14 @@ public class JobMatchServiceImpl implements JobMatchService {
     }
 
     /**
-     * 根据岗位 ID 列表构建匹配结果（补全公司名、分类名等详情）
+     * 根据搜索结果构建匹配结果（补全公司名、分类名等详情，含匹配度分数）
      */
-    private List<JobMatchResult> buildMatchResults(List<Long> jobIds) {
+    private List<JobMatchResult> buildMatchResults(List<MilvusSearchResult> searchResults) {
+        // 提取所有 jobIds
+        List<Long> jobIds = searchResults.stream()
+                .map(MilvusSearchResult::getJobId)
+                .collect(Collectors.toList());
+
         // 批量查询岗位
         List<Job> jobs = jobMapper.selectBatchIds(jobIds);
         if (jobs.isEmpty()) {
@@ -155,6 +161,12 @@ public class JobMatchServiceImpl implements JobMatchService {
         // 建立 jobId -> Job 映射
         Map<Long, Job> jobMap = jobs.stream()
                 .collect(Collectors.toMap(Job::getId, j -> j));
+
+        // 建立 jobId -> score 映射
+        Map<Long, Float> scoreMap = new HashMap<>();
+        for (MilvusSearchResult sr : searchResults) {
+            scoreMap.put(sr.getJobId(), sr.getScore());
+        }
 
         // 批量查询公司
         Set<Long> companyIds = jobs.stream()
@@ -173,7 +185,6 @@ public class JobMatchServiceImpl implements JobMatchService {
                 .collect(Collectors.toSet());
         Map<Long, String> categoryMap = new HashMap<>();
         if (!categoryIds.isEmpty()) {
-            // 通过 SQL 查询分类名
             for (Long catId : categoryIds) {
                 try {
                     var cat = jobCategoryMapper.selectById(catId);
@@ -188,8 +199,8 @@ public class JobMatchServiceImpl implements JobMatchService {
 
         // 构建结果（保持 Milvus 返回的排序）
         List<JobMatchResult> results = new ArrayList<>();
-        for (Long jobId : jobIds) {
-            Job job = jobMap.get(jobId);
+        for (MilvusSearchResult sr : searchResults) {
+            Job job = jobMap.get(sr.getJobId());
             if (job == null) continue;
 
             JobMatchResult result = new JobMatchResult();
@@ -203,6 +214,12 @@ public class JobMatchServiceImpl implements JobMatchService {
             result.setDescription(job.getDescription() != null
                     ? job.getDescription().substring(0, Math.min(200, job.getDescription().length()))
                     : "");
+
+            // 设置匹配度（COSINE 相似度 0-1 → 百分制 0-100）
+            Float score = scoreMap.get(sr.getJobId());
+            if (score != null) {
+                result.setMatchScore(Math.round(score * 100));
+            }
 
             // 补全公司信息
             Company company = companyMap.get(job.getCompanyId());

@@ -42,7 +42,7 @@
               :key="item.key"
               class="sidebar-menu__item"
               :class="{ active: activeTab === item.key }"
-              @click="activeTab = item.key"
+              @click="handleMenuClick(item.key)"
             >
               <el-icon><component :is="item.icon" /></el-icon>
               <span>{{ item.label }}</span>
@@ -613,7 +613,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowRight, Document, Star, Timer, MagicStick, Upload, User, Collection } from '@element-plus/icons-vue'
+import { ArrowRight, Document, Star, Timer, MagicStick, Upload, User, Collection, Connection } from '@element-plus/icons-vue'
 import axios from 'axios'
 import AppShell from '@/components/AppShell.vue'
 import { getMyFavorites } from '@/api/job'
@@ -631,6 +631,15 @@ const activeTab = ref('profile')
 const applicationFilter = ref('all')
 const showEditDialog = ref(false)
 
+// 菜单点击处理
+const handleMenuClick = (key) => {
+  if (key === 'job-match') {
+    router.push('/job-match')
+  } else {
+    activeTab.value = key
+  }
+}
+
 const menuItems = computed(() => {
   const items = [
     { key: 'profile', label: '我的档案', icon: User },
@@ -640,6 +649,7 @@ const menuItems = computed(() => {
     { key: 'followed', label: '我的关注', icon: Star },
     { key: 'interviews', label: '面试记录', icon: Timer },
     { key: 'ai-interview', label: 'AI模拟面试', icon: MagicStick },
+    { key: 'job-match', label: '岗位匹配', icon: Connection },
     { key: 'knowledge-graph', label: '八股面试', icon: Collection }
   ]
   return items

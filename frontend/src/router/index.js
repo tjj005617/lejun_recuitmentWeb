@@ -44,6 +44,7 @@ const routes = [
   { path: '/hr/job/publish', name: 'HRJobPublish', component: () => import('../views/HRJobPublish.vue'), meta: { requiresAuth: true, requiresHR: true } },
   { path: '/hr/job/:id/edit', name: 'HRJobEdit', component: () => import('../views/HRJobPublish.vue'), meta: { requiresAuth: true, requiresHR: true } },
   { path: '/hr/applications', name: 'HRApplications', component: () => import('../views/hr/HRApplications.vue'), meta: { requiresAuth: true, requiresHR: true } },
+  { path: '/job-match', name: 'JobMatch', component: () => import('../views/JobMatch.vue'), meta: { requiresAuth: true } },
   { path: '/asr-test', name: 'AsrTest', component: () => import('../views/AsrTest.vue') }
 ]
 
