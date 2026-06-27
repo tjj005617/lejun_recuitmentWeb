@@ -1,6 +1,33 @@
-# 乐俊招聘平台
+<img width="2559" height="1439" alt="image" src="https://github.com/user-attachments/assets/2e159bf0-81b1-4d6c-bd8a-4658a1cdc6bf" /># 乐俊招聘平台
 
 基于 AI 大模型的智能招聘面试系统，支持文字/沉浸式/八股选择题三种面试模式，集成语音识别（STT）、语音合成（TTS）、视频通话、简历智能匹配等能力，为企业招聘和个人求职提供智能化面试解决方案。
+
+效果图展示
+三栏功能分类 简历分析 - 根据简历分析，生成面试题 | 八股栏目，针对性生成八股题 | 混合模式 简历分析 + 八股栏目混合出题
+
+面试面板选择 - 混合模式为例
+<img width="1209" height="1187" alt="image" src="https://github.com/user-attachments/assets/6573c5a0-d2fe-49ec-9f8e-19c9eb69c664" />
+
+
+AI模拟面试对话 - 简历分析
+<img width="1209" height="939" alt="image" src="https://github.com/user-attachments/assets/a697f979-69d6-4216-bdd8-93365ec61f33" />
+面试评估报告
+<img width="1428" height="1208" alt="image" src="https://github.com/user-attachments/assets/ac72a80d-b0b4-4893-8a3e-0f918e53f66e" />
+
+八股选择题 - 八股栏目
+<img width="2559" height="1439" alt="image" src="https://github.com/user-attachments/assets/c35a5359-6f05-47a3-a151-389a053b8a99" />
+答卷报告
+<img width="2511" height="1401" alt="image" src="https://github.com/user-attachments/assets/6e5636e7-c214-455b-b811-03891879d110" />
+
+AI语音模拟面试 - 混合模式
+<img width="2519" height="1296" alt="image" src="https://github.com/user-attachments/assets/ce9b1482-c837-4e4d-971a-201bce8cd57a" />
+面试评估报告
+<img width="1875" height="1228" alt="image" src="https://github.com/user-attachments/assets/d86372d4-4193-47a2-ae92-b5795c74184f" />
+
+
+
+
+
 
 ## 技术栈
 
